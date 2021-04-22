@@ -34,7 +34,7 @@ There are 3 typs of files bands4vasp can handle:
 
 * The **PRJCAR** file is only present if the unfolding procedure in VASP where activated and therefore every energy value can be associated with a so called Bloch character. Orbital characters are absent in the PRJCAR file and will be as well for all the derived values and plots form this files.
 
-* The **PROCAR** file comes from calculations with LORBIT (see vaspwiki) and contains all information to the orbitals, the so-called orbital characters, but there are no information of the Bloch characters.
+* The **PROCAR** file comes from calculations with LORBIT (see vaspwiki) and contains all information about the orbitals.
 
 * The **PROCAR.prim** file containes both, the Bloch- and the orbital character.
 
