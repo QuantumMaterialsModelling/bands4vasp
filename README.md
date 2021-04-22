@@ -14,10 +14,11 @@ Also a lattice is needed to project the k-points on the Fermi level and calculat
 The reciprocal lattice of the primitive cell, given in the **PRJCAR** file, is the prefered lattice.
 If the **PRJCAR** file is not present, the lattice given in the **POSCAR** file will be taken.
 For a correct bandstructure of an unfolding calculation it is necessary to have at least one **PRJCAR** file in your dataset.
-All energy values will be represented with respect to the fermi-energy, where the fermi-energy is taken eather from the **OUTCAR** file of the self-consistent calculation of the structure,
-from each band respectively or can be entered by the user.
-**bands4vasp** calculates the roots at the fermi-level for all kind of bands. All this information are visualized in several plots.
-With a dataset of line calculations in a surface of the Brillouin zone, one can **bands4vasp** let calculate the fermiroots and than let it project onto that surface.
+All energy values will be represented with respect to the fermi-energy, where the Fermi energy is taken ether from the **OUTCAR** file of the self-consistent calculation of the structure,
+from each band respectively or by setting the Fermi energy directly.
+**bands4vasp** calculates the roots at the fermi level for all kind of bands. All this information are writen in specialized files and visualized in several plots.
+With a dataset of line calculations in a surface of the Brillouin zone, **bands4vasp** can calculate the fermiroots and project it onto that surface.
+**bands4vasp** supports also 3 different pre-processing methods for the sampling of the Fermisurface calculations with VASP.
 **bands4vasp** is written in _FORTRAN_, it uses _Gnuplot_ for the visualisation and a _Bash-environment_ which brings all together.
 ***
   
@@ -30,9 +31,9 @@ With a dataset of line calculations in a surface of the Brillouin zone, one can 
 
 
 
-There are 3 typs of files bands4vasp can handle:
+There are 3 typs of VASP output files bands4vasp is able to read:
 
-* The **PRJCAR** file is only present if the unfolding procedure in VASP where activated and therefore every energy value can be associated with a so called Bloch character. Orbital characters are absent in the PRJCAR file and will be as well for all the derived values and plots form this files.
+* The **PRJCAR** file is present if the unfolding procedure in VASP is activated and therefore every energy value can be associated with a so called Bloch character.
 
 * The **PROCAR** file comes from calculations with LORBIT (see vaspwiki) and contains all information about the orbitals.
 
@@ -47,7 +48,7 @@ bands4vasp provides a lot of different information, which are derived from VASP 
 
 The datafiles are all stored in './bands4vasp_data/', except the FERMIROOTS.dat file(s).
 
-* _FERMIROOTS.dat_ contains all information of the evaluated Fermi vectors.
+* _FERMIROOTS.dat_ contains all information of the evaluated Fermi vectors and some calculation specific information. The file is stored in the execution directory.
 * _banddata.dat_ contains the raw data of the whole bandstructure.
 * _banddata.slim.dat_ contains the manipulated data of the bandstructure.
 * _banddata.specfun.dat_ contains all information of the spectral function from the bandstructure
@@ -59,18 +60,19 @@ The datafiles are all stored in './bands4vasp_data/', except the FERMIROOTS.dat 
 
 The plots are all stored in './bands4vasp_img/'.
 
-* _Bandsturcture*_ shows the unfiltered bands inbetween the energy interval [-EDELTA1;EDELTA1].
-* _EBSbloch*_ shows the unfiltered bands inbetween the energy interval _EDELTA1_ with there according Bloch character.
-* _EBSorbit*_ shows the unfiltered bands inbetween the energy interval _EDELTA1_ with there according orbital character and if present a variable pointsize proportional to the Bloch character.
-* _.spec._ shows the spectral function inbetween the energy interval _EDELTA1_ according to the Bloch character.
-* _Fermisurface.specfun_ shows the Fermisurface derived from the spectral function according to the Bloch character.
-* _Bandindexplot_ shows the Bandstructure according to the bandindex occuring in the VASP files.
-* _Fermisurface_bloch_ shows the derived fermisurface with the calculated avaraged Bloch characters.
-* _Fermisurface_orbital_ shows the derived fermisurface with the calculated avaraged orbital character.
+* _Bandsturcture*_ shows the bands inbetween the energy interval defined by _EDELTA1_.
+* _EBSbloch*_ shows the bands inbetween the energy interval defined by _EDELTA1_ with respect to Bloch character.
+* _EBSorbit*_ shows the bands inbetween the energy interval defined by _EDELTA1_ with the respect to orbital character and if present a variable pointsize proportional to the Bloch character.
+* _.spec._ shows the spectral function inbetween the energy interval defined by _EDELTA1_ with respect to Bloch character.
+* _Fermisurface.specfun_ shows the Fermisurface derived from the spectral function.
+* _Bandindexplot_ shows the Bandstructure with bandindices occuring in the VASP files.
+* _Fermisurface_bloch_ shows the derived fermisurface from the Fermi vectors with respect to Bloch character.
+* _Fermisurface_orbital_ shows the derived fermisurface from the Fermi vecotrs with respect to orbital character.
 
+** N.B.:** For spin polarized calculations the extansion .spin1. and .spin2. are added to the filenames.  
 
-_*These plots have also a manipulated version inbetween the energy interval _EDELTA2_, which indicates the extension .manipulated.  
-_*For spin polarized calculations the extansion .spin1. and .spin2. are added  
+*These plots have also a manipulated version inbetween the energy interval defined by _EDELTA2_, which is indicated by the extension .manipulated.  
+ 
 ***
   
   
