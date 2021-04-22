@@ -79,13 +79,13 @@ The plots are all stored in './bands4vasp_img/'.
 
 ### INPAR - The bands4vasp input file
 
-It is possible to pass bands4vasp some parameters, this parameters need to be stored in a file called **INPAR**.
-If you run bands4vasp and no INPAR file is present in the current directory, bands4vasp will take the default values.
+**bands4vasp** can be controlled by a variety of parameters, this parameters need to be stored in a file called **INPAR**.
+If you run bands4vasp and no INPAR file is present in the execution directory, bands4vasp will take the default values.
 Some parameters have only an effect, if a specific VASP filetype was choosen, because not every information is stored in all of the 3 filetyps.
 
 #### General control parameters
 
-* **EDELTA1** - energy interval (y-axis) for the raw data plots EBSbloch, EBSorbit, EBSbloch.spec and Bandindexplot. If one value is given the interval will be symmetric around the fermi level [-EDELTA1;EDELTA1], or one can set two valuesseperated by a blank.
+* **EDELTA1** - energy interval (y-axis) for the raw data plots EBSbloch, EBSorbit, EBSbloch.spec and Bandindexplot. If one value is given the interval will be symmetric around the fermi level [-EDELTA1;EDELTA1], or one can set the two values individually seperated by a blank.
 * **EDELTA2** - energy interval (y-axis) for the manipulated plots, with the same functionality as EDELTA1.
 * **EDIF**  - Energy diffusion from the unfolding calculation. EDIF defines the maximal energy difference for one k-point, inbetween this interval all points will merged and represented in the manipulated data.
 * **BAVERAGE** - If BAVERAGE is set to .TRUE. the weighted average of the Bloch character is calculated and represented in the manipulated data, else the values will summed up.
