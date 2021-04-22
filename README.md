@@ -85,8 +85,8 @@ Some parameters have only an effect, if a specific VASP filetype was choosen, be
 
 #### General control parameters
 
-* **EDELTA1** - energy interval (y-axis) for the raw data plots EBSbloch, EBSorbit, EBSbloch.spec and Bandindexplot. If one value is given the interval will be symmetric around the fermi level [-EDELTA1;EDELTA1], or one can set the two values individually seperated by a blank.
-* **EDELTA2** - energy interval (y-axis) for the manipulated plots, with the same functionality as EDELTA1.
+* **EDELTA1** - energy interval for the raw data plots EBSbloch, EBSorbit, EBSbloch.spec and Bandindexplot. If one value is given, the interval will be symmetric around the fermi level [-EDELTA1;EDELTA1], or one can set the two values individually seperated by a blank.
+* **EDELTA2** - energy interval for the manipulated plots, with the same functionality as EDELTA1.
 * **EDIF**  - Energy diffusion from the unfolding calculation. EDIF defines the maximal energy difference for one k-point, inbetween this interval all points will merged and represented in the manipulated data.
 * **BAVERAGE** - If BAVERAGE is set to .TRUE. the weighted average of the Bloch character is calculated and represented in the manipulated data, else the values will summed up.
 * **OAVERAGE** - If OAVERAGE is set to .TRUE. the weighted average of the orbitalcharacter is calculated and represented in the manipulated data , else the values were summed up.
