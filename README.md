@@ -62,7 +62,7 @@ The plots are all stored in './bands4vasp_img/'.
 
 * _Bandsturcture*_ shows the bands inbetween the energy interval defined by _EDELTA1_.
 * _EBSbloch*_ shows the bands inbetween the energy interval defined by _EDELTA1_ with respect to Bloch character.
-* _EBSorbit*_ shows the bands inbetween the energy interval defined by _EDELTA1_ with the respect to orbital character and if present a variable pointsize proportional to the Bloch character.
+* _EBSorbit*_ shows the bands inbetween the energy interval defined by _EDELTA1_ with respect to orbital character and if present a variable pointsize proportional to the Bloch character.
 * _.spec._ shows the spectral function inbetween the energy interval defined by _EDELTA1_ with respect to Bloch character.
 * _Fermisurface.specfun_ shows the Fermisurface derived from the spectral function.
 * _Bandindexplot_ shows the Bandstructure with bandindices occuring in the VASP files.
