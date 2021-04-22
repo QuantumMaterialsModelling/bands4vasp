@@ -69,7 +69,7 @@ The plots are all stored in './bands4vasp_img/'.
 * _Fermisurface_bloch_ shows the derived fermisurface from the Fermi vectors with respect to Bloch character.
 * _Fermisurface_orbital_ shows the derived fermisurface from the Fermi vecotrs with respect to orbital character.
 
-** N.B.:** For spin polarized calculations the extansion .spin1. and .spin2. are added to the filenames.  
+**N.B.:** For spin polarized calculations the extansion .spin1. and .spin2. are added to the filenames.  
 
 *These plots have also a manipulated version inbetween the energy interval defined by _EDELTA2_, which is indicated by the extension .manipulated.  
  
