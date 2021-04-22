@@ -50,7 +50,7 @@ The datafiles are all stored in './bands4vasp_data/', except the FERMIROOTS.dat 
 * _FERMIROOTS.dat_ contains all information of the evaluated Fermi vectors.
 * _banddata.dat_ contains the raw data of the whole bandstructure.
 * _banddata.slim.dat_ contains the manipulated data of the bandstructure.
-* _banddata.specfun.dat_ contains all information of the spectral function of the bandstructure
+* _banddata.specfun.dat_ contains all information of the spectral function from the bandstructure
 * _FERMISURFACE.dat_ contains all information of the evaluated fermisurface.
 * _FERMISURFACE.specfun_ contains all information of the evaluated fermisurface spectral function.
 * _autognuplot_bands4vasp.gnu_ is the gnuplot file, which creates all the plots.
