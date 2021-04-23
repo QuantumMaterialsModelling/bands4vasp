@@ -19,7 +19,7 @@ from each band respectively or by setting the Fermi energy directly.
 **bands4vasp** calculates the roots at the fermi level for all kind of bands. All this information are writen in specialized files and visualized in several plots.
 With a dataset of line calculations in a surface of the Brillouin zone, **bands4vasp** can calculate the fermiroots and project it onto that surface.
 **bands4vasp** supports also 3 different pre-processing methods for the sampling of the Fermisurface calculations with VASP.
-**bands4vasp** is written in _FORTRAN_, it uses _Gnuplot_ for the visualisation and a _Bash-environment_ which brings all together.
+**bands4vasp** is written in _FORTRAN_, it uses _Gnuplot_ for the visualisation and a _Bash-environment_ brings all together.
 ***
   
   
