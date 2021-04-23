@@ -85,7 +85,7 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
   
 #### General control parameters
   
-* **EDELTA1** - energy interval for the raw data plots EBSbloch, EBSorbit, EBSbloch.spec and Bandindexplot. If one value is given, the interval will be symmetric around the fermi level [-EDELTA1;EDELTA1], or one can set the two values individually seperated by a blank.
+* **EDELTA1** - energy interval for the raw data plots EBSbloch, EBSorbit, EBSbloch.spec and Bandindexplot. If one value is given, the interval will be symmetric around the Fermi level [-EDELTA1;EDELTA1], or one can set the two values individually seperated by a blank.
   
 * **EDELTA2** - energy interval for the manipulated plots, with the same functionality as EDELTA1.
   
