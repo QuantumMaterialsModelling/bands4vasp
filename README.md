@@ -237,17 +237,17 @@ Beside the --fermi option are also some pre-processing options. For all the foll
                             The **second** coordinate defines the first line of the sampling, starting from the center.  
                             The **third** coordinate defines the last line of the sampling.  
                             The sampling is done in a mathematical positiv sense. The following 3 informations need to be passed:  
-                            $1 => directory for the prepared VASP files
-                            $2 => number of equidistant points on the circle
-                            $3 => name of the new created multidirectory  
+                            $1 => directory for the prepared VASP files  
+                            $2 => number of equidistant points on the circle  
+                            $3 => name of the new created multidirectory   
   
 * --pre-surface $1 $2 $3 :: prepares a equidistant sampling within a rectangle defined by the coordinates given in the KPOINTS file after the flag '#makepath':  
                             The **first** coordinate is the corner of the rectangle where the calculation starts.  
                             The **second** coordinate defines with the first one, the direction and the length of the line calculations.  
                             With the **third** coordinate the rectangle is defined and as well the translation direction of the line sampling.  
                             The following 3 informations need to be passed:  
-                            $1 => directory for the prepared VASP files
-                            $2 => number of equidistant lines on the surface
+                            $1 => directory for the prepared VASP files  
+                            $2 => number of equidistant lines on the surface  
                             $3 => name for the multidirectory  
 ***  
   
