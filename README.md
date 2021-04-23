@@ -228,8 +228,9 @@ There are 3 different ways of using bands4vasp:
   
 Beside the --fermi option are also some pre-processing options. For all the following pre-processing procedures a folder needs to be prepared, which includes all the needed files for the VASP calculation. The section in the KPOINTS file, where one specifies the coordinates of the k-points, is replaced by the flag '#makepath', followed by coordinates depending on the type of sampling:  
   
-* --pre-lines $1 $2 :: prepares a structure of line calculations for each pair of k-points in KPOINT file after the flag '#makepath'. The following two informations need to be passed:
-                       $1 => The directory for the prepared VASP files
+* --pre-lines $1 $2 :: prepares a structure of line calculations for each pair of k-points in KPOINT file after the flag '#makepath'.
+                       The following two informations need to be passed:  
+                       $1 => The directory for the prepared VASP files  
                        $2 => The name for the new created multi-directory  
   
 * --pre-circles $1 $2 $3 :: prepares radial centered sampling. The specification of the radial sampling is done by three coordinates defined in the KPOINTS file, after the flag '#makepath':  
