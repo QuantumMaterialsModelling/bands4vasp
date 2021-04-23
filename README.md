@@ -212,13 +212,13 @@ There are 3 different ways of using bands4vasp:
     
 => b4vasp %calc
   
-This command will pass all directories with numbers from 1-1000 (also with leading zeros) and the name 'calc' => 1calc, 01calc, 001calc, 2calc, ....
+    This command will pass all directories with numbers from 1-1000 (also with leading zeros) and the name 'calc' => 1calc, 01calc, 001calc, 2calc, ....
   
 * **Fermisurface** calculations need the same structure as the multi path calculations, but also the option --fermi need do be added.
     
 => b4vasp --fermi %calc
   
-To get a reasonable result, the line calculations performed with VASP need to be on one plane, but the geometrical arrangement of the lines is not important.
+    To get a reasonable result, the line calculations performed with VASP need to be on one plane, but the geometrical arrangement of the lines is not important.
   
   
   
