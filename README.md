@@ -128,7 +128,7 @@ Some parameters have only an effect, if a specific VASP filetype was choosen, be
   
 #### Fermi surface
 
-* **SYMPOINT1** - needs to be initialized as a 3-dimensional vector, the vector elements are seperated by blanks (e.g. SYMPOINTS1=0.0 0.0 0.0). If SYMPOINT1 is set, it will be taken as the center of point reflection for the Fermi surface.
+* **SYMPOINT1** - needs to be initialized as a 3-dimensional vector. The vector elements are seperated by blanks (e.g. SYMPOINTS1=0.0 0.0 0.0). If SYMPOINT1 is set, it will be taken as the center of point reflection for the Fermi surface.
   
 * **SYMREC** - if SYMREC is set to .TRUE., the coordinates for SYMPOINT1 are treated as reciprocal coordinates (default). If SYMREC is set to .FALSE., bands4vasp consideres cartesion coordinates.
   
