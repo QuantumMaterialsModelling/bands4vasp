@@ -30,7 +30,7 @@ With a dataset of line calculations in a surface of the Brillouin zone, **bands4
 
 
 
-There are 3 typs of VASP output files bands4vasp is able to read:
+There are 3 types of VASP output files bands4vasp is able to read:
 
 * The **PRJCAR** file is present if the unfolding procedure in VASP is activated and therefore every energy state can be associated with a so called Bloch character.
 
