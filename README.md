@@ -10,14 +10,13 @@ bands4vasp -- post processing package for the analysis of unfolded eigenstates i
 
 The **bands4vasp** post-processing package is exclusively build for the analysis and visualisation of bandstructure- and especially unfolding calculations from VASP.
 It uses the energy values, the k-space coordinates and optionally the orbital- and Bloch characters from the **PROCAR**, **PROCAR.prim** or **PRJCAR** files.
-Also a lattice is needed to project the k-points on the Fermi level and calculate the Fermi vectors.
 The reciprocal lattice of the primitive cell, given in the **PRJCAR** file, is the prefered lattice.
-If the **PRJCAR** file is not present, the lattice given in the **POSCAR** file will be taken.
+If the **PRJCAR** file is not present, the lattice in the **POSCAR** file will be taken.
 For a correct bandstructure of an unfolding calculation it is necessary to have at least one **PRJCAR** file in your dataset.
-All energy values will be represented with respect to the fermi-energy, where the Fermi energy is taken ether from the **OUTCAR** file of the self-consistent calculation of the structure,
+All energy values will be represented with respect to the Fermi energy, where the Fermi energy is taken from the **OUTCAR** file of the self-consistent calculation of the structure,
 from each band respectively or by setting the Fermi energy directly.
-**bands4vasp** calculates the roots at the fermi level for all kind of bands. All this information are writen in specialized files and visualized in several plots.
-With a dataset of line calculations in a surface of the Brillouin zone, **bands4vasp** can calculate the fermiroots and project it onto that surface.
+**bands4vasp** calculates the roots at the fermi level for all kind of bands.
+With a dataset of line calculations in a surface of the Brillouin zone, **bands4vasp** can calculate the Fermi vectors and show them on that surface.
 **bands4vasp** supports also 3 different pre-processing methods for the sampling of the Fermisurface calculations with VASP.
 **bands4vasp** is written in _FORTRAN_, it uses _Gnuplot_ for the visualisation and a _Bash-environment_ brings all together.
 ***
