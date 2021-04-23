@@ -80,7 +80,7 @@ The plots are all stored in './bands4vasp_img/'.
 
 **bands4vasp** can be controlled by a variety of parameters, this parameters need to be stored in a file called **INPAR**.
 If you run bands4vasp and no INPAR file is present in the execution directory, bands4vasp will take the default values. The INPAR file with the default values is stored in the source directory of bands4vasp.
-Some parameters have only an effect, if a specific VASP filetype was choosen, because not every information is stored in all of the 3 filetyps.
+Some parameters have only an effect, if a specific VASP filetype was chosen.
 
   
 #### General control parameters
