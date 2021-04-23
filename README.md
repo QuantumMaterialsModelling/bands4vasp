@@ -178,8 +178,9 @@ Some parameters have only an effect, if a specific VASP filetype was choosen, be
 
 ***
   
-  
-  
+    
+    
+    
 ## Getting started
   
 For the installation _bands4vasp_v1.0.tar.gz_ and _install.sh_ are needed. The installation starts with an execution of the install.sh file  
@@ -187,6 +188,7 @@ For the installation _bands4vasp_v1.0.tar.gz_ and _install.sh_ are needed. The i
 _=> ./install.sh_  
   
   
+    
 ### Usage
   
   
@@ -245,6 +247,6 @@ Beside the --fermi option are also some pre-processing options. For all the foll
                             $1 => directory for the prepared VASP files
                             $2 => number of equidistant lines on the surface
                             $3 => name for the multidirectory  
-  
+***  
   
 There are also the options --help and --info available, which prints the most inportant informations about bands4vasp.
