@@ -8,8 +8,8 @@ bands4vasp -- post processing package for the analysis of unfolded eigenstates i
 ## About bands4vasp
 
 
-The **bands4vasp** post-processing package is exclusively build for the analysis and visualisation of bandstructure- and especially unfolding calculations from VASP.
-It uses the energy values, the k-space coordinates and optionally the orbital- and Bloch characters from the **PROCAR**, **PROCAR.prim** or **PRJCAR** files.
+The **bands4vasp** post-processing package is exclusively build for the analysis and visualisation of bandstructure and especially unfolding calculations from VASP.
+It uses the energy values, the k-space coordinates and optionally the orbital and Bloch characters from the **PROCAR**, **PROCAR.prim** or **PRJCAR** files.
 The reciprocal lattice of the primitive cell, given in the **PRJCAR** file, is the prefered lattice.
 If the **PRJCAR** file is not present, the lattice in the **POSCAR** file will be taken.
 For a correct bandstructure of an unfolding calculation it is necessary to have at least one **PRJCAR** file in your dataset.
