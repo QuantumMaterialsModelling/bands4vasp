@@ -34,7 +34,7 @@ There are 3 types of VASP output files bands4vasp is able to read:
 
 * The **PRJCAR** file is present if the unfolding procedure in VASP is activated and therefore every energy state can be associated with a so called Bloch character.
 
-* The **PROCAR** file comes from calculations with LORBIT (see vaspwiki) and contains all information about the orbitals.
+* The **PROCAR** file comes from calculations with [LORBIT](https://www.vasp.at/wiki/index.php/LORBIT) and contains all information about the orbitals.
 
 * The **PROCAR.prim** file containes both, the Bloch- and the orbital character.
 
@@ -238,9 +238,9 @@ _#makepath_
 _0 0 0_  
 _0.5 0 0_  
 _0 0.5 0_  
-######################################################  
+##################################################  
   
-There are 3 typs of sampling methods:    
+More information about [unfolding method with vasp](https://www.vasp.at/wiki/index.php/LKPROJ) or the [KPOINTS](https://www.vasp.at/wiki/index.php/KPOINTS) file can be found on the [vasp wiki page](https://www.vasp.at/wiki/index.php/The_VASP_Manual). There are 3 typs of sampling methods:    
   
 * --pre-lines $1 $2 :: prepares a structure of line calculations for each pair of k-points in KPOINTS file after the flag '#makepath'.
                        The following two informations need to be passed:  
