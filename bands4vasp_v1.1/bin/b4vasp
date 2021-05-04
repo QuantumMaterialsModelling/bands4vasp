@@ -1,0 +1,150 @@
+#!/bin/bash
+# $1 filename (optional)
+
+# directory of the package and temporary filnames
+odir=`pwd`
+
+adir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+packagedir="$( cd "$adir" && cd .. && pwd )"
+bin="$packagedir/bin"
+allfilenames="$packagedir"'/bands4vasp_filenames'
+filedir=`sed -n 1p "$allfilenames"`
+INPAR=`sed -n 2p "$allfilenames"`
+plotdata=`sed -n 3p "$allfilenames"`
+outgrid=`sed -n 5p "$allfilenames"`
+fermifile=`sed -n 6p "$allfilenames"`
+fittpoints=`sed -n 7p "$allfilenames"`
+latt=`sed -n 8p "$allfilenames"`
+fefile=`sed -n 9p "$allfilenames"`
+fsurfile=`sed -n 20p "$allfilenames"`
+fsurspecfile=`sed -n 21p "$allfilenames"`
+spinfile=`sed -n 22p "$allfilenames"`
+datdir=`sed -n 23p "$allfilenames"`
+imgdir=`sed -n 24p "$allfilenames"`
+plotfiles=`sed -n 25p "$allfilenames"`
+
+
+if [ "`pwd`" == "$adir" ];then
+  echo "ERROR: It is not allowed to start calculations in the source directory!"
+  echo "$adir"
+  echo "Do it somewhere else."
+  exit
+fi
+
+inparcheck="$adir/INPARcheck.sh"
+filecheck="$adir/filecheck.sh"
+sorce="$packagedir/src"
+oinpar="$packagedir/$INPAR"
+
+#check passed informations
+if [ `echo $PATH|grep -c "$bin"` -eq 0 ];then PATH=$PATH:"$bin";fi
+
+#check filename and pathname and write all existing files in $filedir
+filename="$1"
+if [ `echo "$filename"|grep -Eic '^[-]{1,}info$|^[-]{1,}help$'` -eq 1 ];then
+  cat "$packagedir/infofile"
+  exit
+fi
+
+if [ `echo "$filename"|grep -Eic '^[-]{1,}inpar$'` -eq 1 ];then
+  cp "$oinpar" .
+  ls
+  exit
+fi
+
+
+#Pre-Processing procedures
+if [ `echo "$filename"|grep -Eic '^[-]{1,}pre'` -eq 1 ];then
+ if [ `echo "$filename"|grep -Eic '[-]circle'` -eq 1 ];then
+    makefermicircle.sh "$2" "$3" "$4"
+    exit
+ elif [ `echo "$filename"|grep -Eic '[-]surface'` -eq 1 ];then
+   makefermisurface.sh "$2" "$3" "$4"
+   exit
+ elif [ `echo "$filename"|grep -Eic '[-]lines'` -eq 1 ];then
+   makefermilines.sh "$2" "$3"
+   exit
+ else
+   echo "There is no option like '$filename'"
+   read -p "Proceed with prepareing line calculations? [y/n]:" ans
+   if [ -n "$ans" ];then
+     if [ $(echo "$ans"|grep -ic "y") -eq 1 ];then makefermilines.sh;fi
+     exit
+   fi  
+ fi
+fi
+
+
+lfermisurface=false
+nfermisurface=`echo "$1"|grep -Eic '^[-]{1,}fermi$'`
+if [ $nfermisurface -eq 1 ];then
+  filename="$2"
+  lfermisurface=true
+fi
+
+rm -f "$fefile"
+
+#read all parameters
+INPARcheck.sh "$oinpar"
+fpastat=`sed -n 29p temp$INPAR`
+
+filecheck.sh "$allfilenames" "$filename" "$fpastat"
+fstat=$?
+
+
+if [ $fstat -eq 0 ];then exit 1;fi
+unfold='.TRUE.'
+if [ $fstat -eq 2 ];then unfold='.FALSE.';fi
+
+# read the fermi energy form sc calculation in outcar
+if [ `echo $fpastat|grep -ciE '^bands$'` -eq 0 ];then
+Efermi=`cat $fefile`
+rm -f $fefile
+echo "Fermi-energy :: $Efermi eV"
+else
+ Efermi=0
+fi
+
+
+rm -f *$plotdata $fermifile.temp
+
+mkdir -p "$datdir"
+
+if [ $(sed -n 20p "temp$INPAR"|grep -Eic "*true*") -eq 1 ];then mkdir -p "$datdir/bandindexplot";fi
+
+
+specfun=`sed -n 22p "temp$INPAR"|grep -Eic "*true*"`
+if [ $specfun -eq 1 ];then rm -f $datdir/$fsurspecfile*;fi
+ninterval=`grep '#interval' $filedir | awk '{print $2}'`
+
+nebsfitting "$ninterval" "$allfilenames" "$Efermi" "$fstat" "$nfermisurface"
+if [ $? -ne 0 ];then exit;fi
+
+cd $datdir
+
+spin=$(cat $spinfile)
+rm -f $spinfile
+
+
+fstat1=$(sort_plotdata.sh "$allfilenames" "$fstat" $lfermisurface $spin 1)
+if [ $spin -eq 2 ];then fstat2=$(sort_plotdata.sh "$allfilenames" "$fstat" $lfermisurface $spin 2);fi
+
+makeplot=`sed -n 31p "../temp$INPAR"|grep -Eic "*true*"`
+if [ $makeplot -gt 0 ];then
+  bandasambler.sh $lfermisurface "$fstat1" "$packagedir" "$allfilenames" "$plotfiles" $spin 1
+     if [ $spin -eq 2 ];then bandasambler.sh $lfermisurface "$fstat2" "$packagedir" "$allfilenames" "$plotfiles" $spin 2;fi
+fi
+
+
+cd $odir
+
+print_produced_files.sh "./$datdir/$plotfiles" "$makeplot" "$imgdir"
+
+rem=`sed -n 32p "temp$INPAR"|grep -Eic "*true*"`
+if [ $rem -eq 0 ];then
+rm -fr "$datdir"
+fi
+rm -f "temp$INPAR" "$filedir" "$latt" 'tempprocararray.temp' 'tempprjcararray.temp'
+
+echo ""
+echo "=================== Calculation done! ===================="
