@@ -64,7 +64,7 @@ echo "do you want to install [press enter] or skip [enter s]:"
 read -p "(This works only if you are useing 'apt-get' as your packetmanager) " ans
 echo ""
 if [ ! `echo $ans|grep -Eic 's'` -eq 1 ];then
- packages='gfortran gnuplot'
+ packages='gfortran gnuplot ghostscript'
  for p in $packages; do
    sudo apt-get install $p
  done
