@@ -41,7 +41,7 @@ There are 3 types of VASP output files bands4vasp is able to read:
 ### bands4vasp output files
 
 
-bands4vasp provides a lot of different information, which are derived from VASP files.
+bands4vasp provides a lot of different information, which are derived from VASP files. For a better overview of the parameters which are used for the calculation, bands4vasp prints them in the _OUTPAR_ file in the execution directory.
 
 #### Datafiles:
 
@@ -70,7 +70,7 @@ The plots are all stored in './bands4vasp_img/'.
 
 **N.B.:** For spin polarized calculations the extansion .spin1. and .spin2. are added to the filenames.  
 
-*These plots have also a manipulated version inbetween the energy interval defined by _EDELTA2_, which is indicated by the extension .manipulated.  
+*These plots have also a processed version inbetween the energy interval defined by _EDELTA2_, which is indicated by the extension .processed.  
  
 ***
   
@@ -87,13 +87,13 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
   
 * **EDELTA1** - energy interval for the raw data plots EBSbloch, EBSorbit, EBSbloch.spec and Bandindexplot. If one value is given, the interval will be symmetric around the Fermi level [-EDELTA1;EDELTA1], or one can set the two values individually seperated by a blank.
   
-* **EDELTA2** - energy interval for the manipulated plots, with the same functionality as EDELTA1.
+* **EDELTA2** - energy interval for the processed plots, with the same functionality as EDELTA1.
   
-* **EDIF**  - Energy diffusion from the unfolding calculation. EDIF defines the maximal energy difference for one k-point, inbetween this interval all energy states will merged and represented in the manipulated data as one state.
+* **EDIF**  - Energy diffusion from the unfolding calculation. EDIF defines the maximal energy difference for one k-point, inbetween this interval all energy states will merged and represented in the processed data as one state.
   
-* **BAVERAGE** - If BAVERAGE is set to .TRUE. the weighted average of the Bloch character is calculated and represented in the manipulated data, else the values will summed up.
+* **BAVERAGE** - If BAVERAGE is set to .TRUE. the weighted average of the Bloch character is calculated and represented in the processed data, else the values will summed up.
   
-* **OAVERAGE** - If OAVERAGE is set to .TRUE. the weighted average of the orbital character is calculated and represented in the manipulated data , else the values were summed up.
+* **OAVERAGE** - If OAVERAGE is set to .TRUE. the weighted average of the orbital character is calculated and represented in the processed data , else the values were summed up.
   
 * **BLOCH_TRESHOLD** - sets the minimal Bloch character value. Energy states with a Bloch character less than BLOCH_THRESHOLD will rejected.
   
@@ -128,9 +128,13 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
   
 #### Fermi surface
 
-* **SYMPOINT1** - needs to be initialized as a 3-dimensional vector. The vector elements are seperated by blanks (e.g. SYMPOINTS1=0.0 0.0 0.0). If SYMPOINT1 is set, it will be taken as the center of point reflection for the Fermi surface.
+* **SYMPOINT1** - needs to be initialized as a 3-dimensional vector. The vector elements are seperated by blanks (e.g. SYMPOINT1=0.0 0.0 0.0). If SYMPOINT1 is set, it will be taken as the center of point reflection for the Fermi surface.
+  
+* **SYMPOINT2** - needs to be initialized as a 3-dimensional vector. The vector elements are seperated by blanks (e.g. SYMPOINT2=0.0 0.0 0.0). If SYMPOINT1 and SYMPOINT2 are set, bands4vasp will do a axis reflection on the Fermi surface with respect to the axis defined by the 2 SYMPOINTS. The points will only be accept, if they are on the Fermi surface.
   
 * **SYMREC** - if SYMREC is set to .TRUE., the coordinates for SYMPOINT1 are treated as reciprocal coordinates (default). If SYMREC is set to .FALSE., bands4vasp consideres cartesion coordinates.
+  
+* **FSURCART** - if FSURCART is set to .TRUE., the cartesian distances of the surface are shown in the plots, else it will show the k-vectors (default).
   
 * **FGRID** - An integer value gives the density of a grid for the Fermi surface plots. If set to 0 (default) no grid will be shown.
   
@@ -150,7 +154,7 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
 
 * **MAKEPLOTS** - if MAKEPLOTS is set to .FALSE. no plots will be created.
   
-* **FILEFORMAT** - bands4vasp supports a choice of different file format of the plots. Possible formats are: png, pngcairo, eps (default).
+* **FILEFORMAT** - bands4vasp supports a choice of different file format of the plots. Possible formats are: png, pngcairo, pdf, eps (default).
   
 * **BANDINDEXPLOT** - if set to .TRUE. the Bandindexplot will be created.
   
@@ -161,11 +165,11 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
 
 * **PATHPOINTS** - sets the letters for each pathpoint seperated by a blank. A '/' infrot of a letter print the greek letter. For example _PATHPOINTS=/G M X Y_
   
-* **LFITPOINTS** - if set to .TRUE. the fitpoints from the linear regression/polynomial interpolation are shown in the plots. By default they are only shown in the manipulated versions of the plots.
+* **LFITPOINTS** - if set to .TRUE. the fitpoints from the linear regression/polynomial interpolation are shown in the plots. By default they are only shown in the processed versions of the plots.
   
-* **LLINES** - if set to .TRUE. the graph from the linear regression/polynomial interpolation are shown in the plots. By default they are only shown in the manipulated versions of the plots.
+* **LLINES** - if set to .TRUE. the graph from the linear regression/polynomial interpolation are shown in the plots. By default they are only shown in the processed versions of the plots.
   
-* **LROOTS** - if set to .TRUE. the Fermi roots from the linear regression/polynomial interpolation are shown in the plots. By default they are only shown in the manipulated versions of the plots.
+* **LROOTS** - if set to .TRUE. the Fermi roots from the linear regression/polynomial interpolation are shown in the plots. By default they are only shown in the processed versions of the plots. If there are no Fermi roots found, the energy interval of the band gap is show in the plots, only if LROOTS is not set to .FALSE..
   
 * **PSFAC** - is a factor for the general pointsize of all plots. By default it is 1.0.
   
