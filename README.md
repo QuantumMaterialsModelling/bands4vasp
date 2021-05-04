@@ -95,7 +95,7 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
   
 * **OAVERAGE** - If OAVERAGE is set to .TRUE. the weighted average of the orbital character is calculated and represented in the processed data , else the values were summed up.
   
-* **BLOCH_TRESHOLD** - sets the minimal Bloch character value. Energy states with a Bloch character less than BLOCH_THRESHOLD will rejected.
+* **BLOCH_TRESHOLD** - sets the minimal Bloch character value. Energy states with a Bloch character less than BLOCH_THRESHOLD will rejected. For unfolding calculations it is recommended to set it to a smal value.
   
 * **EFERMI** - sets the source for the Fermi energy. Default is from ./OUTCAR. It is possible to give a directory to the OUTCAR file (e.g. /home/calculation/), to set the Fermi energy explicitly (e.g. 0.4), or by setting the keyword 'bands' to take the Fermi energy from the OUTCAR files of each banddata respectively.
   
