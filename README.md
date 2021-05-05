@@ -65,6 +65,7 @@ The plots are all stored in './bands4vasp_img/'.
 * _.spec._ shows the spectral function inbetween the energy interval defined by _EDELTA1_ with respect to Bloch character.
 * _Fermisurface.specfun_ shows the Fermisurface derived from the spectral function.
 * _Bandindexplot_ shows the Bandstructure with bandindices occuring in the VASP files.
+* _Fermisurface_ shows the derived fermisurface from the Fermi vectors.
 * _Fermisurface_bloch_ shows the derived fermisurface from the Fermi vectors with respect to Bloch character.
 * _Fermisurface_orbital_ shows the derived fermisurface from the Fermi vecotrs with respect to orbital character.
 
