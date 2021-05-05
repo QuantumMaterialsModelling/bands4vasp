@@ -88,7 +88,7 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
   
 * **EDELTA1** - energy interval for the raw data plots EBSbloch, EBSorbit, EBSbloch.spec and Bandindexplot. If one value is given, the interval will be symmetric around the Fermi level [-EDELTA1;EDELTA1], or one can set the two values individually seperated by a blank.
   
-* **EDELTA2** - energy interval for the processed plots, with the same functionality as EDELTA1.
+* **EDELTA2** - energy interval for the processed plots, with the same functionality as EDELTA1, with the different that only energy states in this interval are taken account for calculating the Fermi vectors.
   
 * **EDIF**  - Energy diffusion from the unfolding calculation. EDIF defines the maximal energy difference for one k-point, inbetween this interval all energy states will merged and represented in the processed data as one state.
   
