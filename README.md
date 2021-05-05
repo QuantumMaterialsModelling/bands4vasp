@@ -189,14 +189,14 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
   
 For the installation **bands4vasp_v1.0.tar.gz** and **install.sh** are needed. The installation starts with an execution of the install.sh file  
   
-_=> ./install.sh_  
+> $ ./install.sh  
   
   
     
 ### Usage
   
   
-b4vasp [OPTION] ... [file]  
+> b4vasp [OPTION] ... [file]  
   
 
 To start a calculation there have to be the following files:
@@ -209,19 +209,19 @@ There are 3 different ways of using bands4vasp:
 
 * **Single path** calculations can be done in the directory of the VASP files by entering the command 'b4vasp', or one can pass a directory
     
-=> b4vasp "directory"  
+> $ b4vasp "directory"  
   
   
 * **Multi path** calculations are possible if there are numbered folders including the VASP files from the band calculation. To pass this kind of structure a %-sign represents the number in the foldername.
     
-=> b4vasp %calc
+> $ b4vasp %calc
   
-   This command will pass all directories with numbers from 1-1000 (also with leading zeros) and the name 'calc'  
-   => 1calc, 01calc, 001calc, 2calc, ....
+>>   This command will pass all directories with numbers from 1-1000 (also with leading zeros) and the name 'calc'  
+>>   => 1calc, 01calc, 001calc, 2calc, ....
   
 * **Fermisurface** calculations need the same structure as the multi path calculations and additionally with option flag --fermi.
     
-=> b4vasp --fermi %calc
+> $ b4vasp --fermi %calc
   
    To get a reasonable result, the line calculations performed with VASP need to be on one plane,  
    but the geometrical arrangement of the lines is not important.
@@ -233,17 +233,17 @@ There are 3 different ways of using bands4vasp:
 Beside the --fermi option are also some pre-processing options available. For all the following pre-processing procedures there has to be a folder, which includes all files for the VASP calculation. The section in the KPOINTS file, where one specifies the coordinates of the k-points, is replaced by the flag '#makepath', followed by coordinates depending on the type of sampling. The entries above the '#makepath' flag are copied in every KPOINTS file followed by the calcuclated coordinates. A KPOINTS file for a radial sampling with the first line from center (0, 0, 0) to (0.5, 0, 0) and the last line from (0, 0, 0) to (0, 0.5, 0) in reciprocal coordinates is shown below.  
   
   
-#################### **KPOINTS** ####################  
-_automatic radial sampling_  
-_100_  
-_p_  
-_line_  
-_rec_  
-_#makepath_  
-_0 0 0_  
-_0.5 0 0_  
-_0 0.5 0_  
-##################################################  
+> #################### **KPOINTS** ####################  
+> _automatic radial sampling_  
+> _100_  
+> _p_  
+> _line_  
+> _rec_  
+> _#makepath_  
+> _0 0 0_  
+> _0.5 0 0_  
+> _0 0.5 0_  
+> ##################################################  
   
 More information about [unfolding method with vasp](https://www.vasp.at/wiki/index.php/LKPROJ) or the [KPOINTS](https://www.vasp.at/wiki/index.php/KPOINTS) file can be found on the [vasp wiki page](https://www.vasp.at/wiki/index.php/The_VASP_Manual). There are 3 typs of sampling methods:    
   
@@ -271,4 +271,4 @@ More information about [unfolding method with vasp](https://www.vasp.at/wiki/ind
                             $3 => name for the multidirectory  
 ***  
   
-There are also the options --help and --info available, which prints the most inportant informations about bands4vasp.
+> There are also the options --help and --info available, which prints the most inportant informations about bands4vasp.
