@@ -187,7 +187,7 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
     
 ## Getting started
   
-For the installation **bands4vasp_v1.0.tar.gz** and **install.sh** are needed. The installation starts with an execution of the install.sh file  
+For the installation **bands4vasp_v< _version_ >.tar.gz** and **install.sh** are needed. The installation starts with an execution of the install.sh file  
   
 > $ ./install.sh  
   
