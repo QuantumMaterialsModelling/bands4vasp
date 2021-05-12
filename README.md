@@ -232,7 +232,7 @@ There are 3 different ways of using bands4vasp:
   
 Beside the --fermi option is also the option -rs [--readsave]. The -rs option reads the raw data from the calculation before, which can save a lot of time caused by reading the VASP files. It can be used in the following way:  
   
-* First you run a calculation in the normal mode.  
+* First run a calculation in the normal mode.  
 > $ b4vasp %calc  
   
 * Now one can modify the INPAR file and run the calculation again, but this time without a path specification, with the optional --fermi option and the option -rs. 
