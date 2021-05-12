@@ -189,7 +189,7 @@ Some parameters have only an effect, if a specific VASP filetype was chosen.
   
 For the installation **bands4vasp_v**< version >**.tar.gz** and **install.sh** are needed. The installation starts with an execution of the install.sh file  
   
-> $ ./install.sh  
+> $source ./install.sh  
   
   
     
@@ -230,7 +230,17 @@ There are 3 different ways of using bands4vasp:
   
 #### Options
   
-Beside the --fermi option are also some pre-processing options available. For all the following pre-processing procedures there has to be a folder, which includes all files for the VASP calculation. The section in the KPOINTS file, where one specifies the coordinates of the k-points, is replaced by the flag '#makepath', followed by coordinates depending on the type of sampling. The entries above the '#makepath' flag are copied in every KPOINTS file followed by the calcuclated coordinates. A KPOINTS file for a radial sampling with the first line from center (0, 0, 0) to (0.5, 0, 0) and the last line from (0, 0, 0) to (0, 0.5, 0) in reciprocal coordinates is shown below.  
+Beside the --fermi option is also the option -rs [--readsave]. The -rs option reads the raw data from the calculation before, which can save a lot of time caused by reading the VASP files. It can be used in the following way:  
+  
+* First you run a calculation in the normal mode.  
+> $ b4vasp %calc  
+  
+* Now one can modify the INPAR file and run the calculation again, but this time without a path specification, with the optional --fermi option and the option -rs. 
+> $ b4vasp --fermi -rs  
+  
+**CAUTION:** There are some parameter, which can not be reset in the --readsave mode. **EDELTA1** and **EDELTA2** can only set to intervals which are included in the original **EDELTA1** interval. **SKIPKPOINT**, **SELECTION**, **EFERMI**, **KAPPANORM** and **BLOCH_THRESHOLD** don't have any influence on the --readsave mode.  
+  
+There aro also some pre-processing options available. For all the following pre-processing procedures there has to be a folder, which includes all files for the VASP calculation. The section in the KPOINTS file, where one specifies the coordinates of the k-points, is replaced by the flag '#makepath', followed by coordinates depending on the type of sampling. The entries above the '#makepath' flag are copied in every KPOINTS file followed by the calcuclated coordinates. A KPOINTS file for a radial sampling with the first line from center (0, 0, 0) to (0.5, 0, 0) and the last line from (0, 0, 0) to (0, 0.5, 0) in reciprocal coordinates is shown below.  
   
   
 > #################### **KPOINTS** ####################  
