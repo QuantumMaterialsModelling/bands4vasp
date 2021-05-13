@@ -1,6 +1,5 @@
 #!/bin/bash
 # $1 = # of inputfiles (pathnumber)
-# $2 = directore of default parameter input file
 
 checkplotdefault() {
 dpfile="$1"
@@ -26,8 +25,6 @@ else
  fi
 fi
 
-#  defaultvalue=`grep "$dpword" "$dpfile"|cut -d'=' -f2-|sed 's/^[ \t]*//;s/[ \t]*$//'`
-#  ldefaultvalue=true
     firstdigit=`grep -i "$dpword" "$takefile" | tail -n1 | sed 's/^[ \t]*//' | grep -Eo "^.{1}"`
     if [ "$firstdigit" == '#' ] || [ "$firstdigit" == '!' ];then
       defaultvalue='#'
@@ -45,7 +42,7 @@ if [ $nextjump -eq 0 ];then
   checkplotdefault "$dpfile" "$ik"
   eval $ik=\$defaultvalue
   eval 'IO'$ik=\$ldefaultvalue
-#  echo "$ik = $defaultvalue"
+
 else
   nextjump=0
 fi
