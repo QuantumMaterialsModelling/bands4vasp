@@ -113,7 +113,7 @@ The bands4vasp package can read the following files from VASP calculations:
 * the **PROCAR** file for _nlm_ and site projected wave function character of each eigenvalue;
 * the **PROCAR.prim** file, analogous to PROCAR, but for unfolding calculations;
 * the **POSCAR** file for information on the lattice and the structure;
-* the **OUTCAR** file :: if the Fermi energy is not specified by the user (via the INPAR file), the value is taken from the OUTCAR.
+* the **OUTCAR** file for retrieving the value of the Fermi energy (if not specified in the INPAR file).
 
 ### INPAR - The bands4vasp input file
 
