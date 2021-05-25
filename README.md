@@ -113,12 +113,12 @@ The bands4vasp package can read the following files from VASP calculations:
 * the **PROCAR** file for _nlm_ and site projected wave function character of each eigenvalue;
 * the **PROCAR.prim** file, analogous to PROCAR, but for unfolding calculations;
 * the **POSCAR** file for information on the lattice and the structure;
-* **OUTCAR** :: if the Fermi energy is not specified by the user (via the INPAR file), the value is taken from the OUTCAR.
+* the **OUTCAR** file :: if the Fermi energy is not specified by the user (via the INPAR file), the value is taken from the OUTCAR.
 
 ### INPAR - The bands4vasp input file
 
 The **INPAR** files contains all parameters needed for executing bands4vasp.
-Default values are used for variables eventually not specified in the INPAR file (the INPAR file with the default values is stored in the source directory of bands4vasp). The list of variables used in the execution of bands4vasp are stored in the **OUTPAR** file.
+Default values are used for variables eventually not specified in the INPAR file (the INPAR file with the default values is stored in the installation directory). The list of variables used in the execution of bands4vasp get printed in the **OUTPAR** file.
 A complete description of all variables controlled by the INPAR is provided in hte Manual.
 
 ***
