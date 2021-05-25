@@ -2,8 +2,8 @@
 
 bands4vasp -- post processing package for the analysis of unfolded eigenstates in VASP, and much more: band structures, 2D and 3D Fermi surfaces, Fermi wave vectors and spectral functions.
 ***
-D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli,
-\\University of Vienna (Austria)
+D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli,\
+University of Vienna (Austria)
 ***
 This Readme file is supposed to serve as quick guide: for a complete description please refer to the Manual.
 
