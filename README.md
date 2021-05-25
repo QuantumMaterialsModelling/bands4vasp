@@ -3,10 +3,9 @@
 bands4vasp -- post processing package for the analysis of unfolded eigenstates in VASP, and much more: band structures, 2D and 3D Fermi surfaces, Fermi wave vectors and spectral functions.
 ***
 D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli,
-University of Vienna (Austria)
+\\University of Vienna (Austria)
 ***
 This Readme file is supposed to serve as quick guide: for a complete description please refer to the Manual.
-***
 
 ## About bands4vasp
 
@@ -35,12 +34,6 @@ bands4vasp can be executed by the following bash command
 > b4vasp \[OPTIONS\] ... \[file\]
 
 If no option is specified, the execution will result in the calculation of energy bandstructures and spectral functions, using default parameters (see the Manual for a complete description). 
-
-The following files (from VASP calculations) are required by bands4vasp:
-
-* **PROCAR.prim**, **PROCAR** or **PRJCAR** :: for retrieving information on eigenvalues and eigenvectors;
-* **PRJCAR** or **POSCAR** :: for information on the lattice and the structure (**PRJCAR** file is recommended for unfolding calculations);
-* **OUTCAR** :: if the Fermi energy is not specified by the user (via the INPAR file), the value is taken from the **OUTCAR**.
 
 The bands4vasp package can be used in three different modes:
 
@@ -105,7 +98,7 @@ The datafiles are all stored in './bands4vasp_data/', except the FERMIROOTS.dat 
 * _Fermisurface_bloch_ shows the derived fermisurface from the Fermi vectors with respect to Bloch character.
 * _Fermisurface_orbital_ shows the derived fermisurface from the Fermi vecotrs with respect to orbital character.
 
-For spin polarized calculations the extansion .spin1. and .spin2. are added to the filenames.
+For spin polarized calculations the extension .spin1. and .spin2. are added to the filenames.
 
 The extension _.processed._ indicates images including technical details (for example, the interpolation calculated to determine the Fermi wave vectors).
 
@@ -118,7 +111,9 @@ Most relevant images are stored in the root directory, while supplementary image
 The bands4vasp package can read the following files from VASP calculations:
 * the **PRJCAR** file for unfolding calculations in VASP;
 * the **PROCAR** file for _nlm_ and site projected wave function character of each eigenvalue;
-* the **PROCAR.prim** file, analogous to PROCAR, but for unfolding calculations.
+* the **PROCAR.prim** file, analogous to PROCAR, but for unfolding calculations;
+* the **POSCAR** file for information on the lattice and the structure;
+* **OUTCAR** :: if the Fermi energy is not specified by the user (via the INPAR file), the value is taken from the OUTCAR.
 
 ### INPAR - The bands4vasp input file
 
