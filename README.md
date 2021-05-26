@@ -14,7 +14,7 @@ The package can be used in any _Bash environment_, it is written in _FORTRAN_ an
 If you use this code please cite:
 Dirnberger, D., Kresse, G., Franchini, C., Reticcioli, M. (2021). Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions ( http://arxiv.org/abs/2103.09540 ).
 
-About this version, bands4vasp 0.1 (May 2021):
+About this version, bands4vasp v0.1 (May 2021):
 This is the first beta version of the package. Please report us any bug. Comments and suggestions are also welcome.
 
 ***
