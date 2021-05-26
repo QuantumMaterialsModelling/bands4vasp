@@ -9,7 +9,7 @@ This Readme file serves as a quick guide: for a complete description please refe
 
 ## About bands4vasp
 
-The **bands4vasp** post-processing package is tailored for the analysis and visualisation of bandstructures, Fermi surfaces and spectral functions obtained from VASP calculations, with special focus on unfolding simulations.\
+The **bands4vasp** post-processing package is tailored for the analysis and visualisation of band structures, Fermi surfaces and spectral functions obtained from VASP calculations, with special focus on unfolding simulations.\
 The package can be used in any _Bash environment_, it is written in _FORTRAN_ and it uses _Gnuplot_ for data visualization.
 If you use this code please cite:
 Dirnberger, D., Kresse, G., Franchini, C., Reticcioli, M. (2021). Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions ( http://arxiv.org/abs/2103.09540 ).
@@ -33,7 +33,7 @@ bands4vasp can be executed by the following bash command
 
 > b4vasp \[OPTIONS\] ... \[file\]
 
-If no option is specified, the execution will result in the calculation of energy bandstructures and spectral functions, using default parameters (see the Manual for a complete description). 
+If no option is specified, the execution will result in the calculation of energy band structures and spectral functions, using default parameters (see the Manual for a complete description). 
 
 The bands4vasp package can be used in three different modes:
 
@@ -77,11 +77,11 @@ The execution of bands4vasp produces different types of files, as describe below
 #### Datafiles:
 
 * _FERMIROOTS.dat_ contains all information of the evaluated Fermi vectors and some calculation specific information.
-* _banddata.dat_ contains the raw data of the whole bandstructure.
-* _banddata.slim.dat_ contains the manipulated data of the bandstructure.
-* _banddata.specfun.dat_ contains all information of the spectral function from the bandstructure
-* _FERMISURFACE.dat_ contains all information of the evaluated fermisurface.
-* _FERMISURFACE.specfun_ contains all information of the evaluated fermisurface spectral function.
+* _banddata.dat_ contains the raw data of the whole band structure.
+* _banddata.slim.dat_ contains the manipulated data of the band structure.
+* _banddata.specfun.dat_ contains all information of the spectral function from the band structure
+* _FERMISURFACE.dat_ contains all information of the evaluated Fermi surface.
+* _FERMISURFACE.specfun_ contains all information of the evaluated Fermi surface spectral function.
 * _autognuplot_bands4vasp.gnu_ is the gnuplot file for generating all images.
 
 The datafiles are all stored in './bands4vasp_data/', except the FERMIROOTS.dat file(s).
@@ -92,11 +92,11 @@ The datafiles are all stored in './bands4vasp_data/', except the FERMIROOTS.dat 
 * _EBSbloch*_ shows the bands inbetween the energy interval defined by _EDELTA1_ with respect to Bloch character.
 * _EBSorbit*_ shows the bands inbetween the energy interval defined by _EDELTA1_ with respect to orbital character and if present a variable pointsize proportional to the Bloch character.
 * _.spec._ shows the spectral function inbetween the energy interval defined by _EDELTA1_ with respect to Bloch character.
-* _Fermisurface.specfun_ shows the Fermisurface derived from the spectral function.
-* _Bandindexplot_ shows the Bandstructure with bandindices occuring in the VASP files.
-* _Fermisurface_ shows the derived fermisurface from the Fermi vectors.
-* _Fermisurface_bloch_ shows the derived fermisurface from the Fermi vectors with respect to Bloch character.
-* _Fermisurface_orbital_ shows the derived fermisurface from the Fermi vecotrs with respect to orbital character.
+* _Fermisurface.specfun_ shows the Fermi surface derived from the spectral function.
+* _Bandindexplot_ shows the band structure with bandindices occuring in the VASP files.
+* _Fermisurface_ shows the derived Fermi surface from the Fermi vectors.
+* _Fermisurface_bloch_ shows the derived Fermi surface from the Fermi vectors with respect to Bloch character.
+* _Fermisurface_orbital_ shows the derived Fermi surface from the Fermi vecotrs with respect to orbital character.
 
 For spin polarized calculations the extension .spin1. and .spin2. are added to the filenames.
 
