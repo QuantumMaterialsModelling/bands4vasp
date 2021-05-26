@@ -5,7 +5,7 @@ bands4vasp -- post processing package for the analysis of unfolded eigenstates i
 D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli,\
 University of Vienna (Austria)
 ***
-This Readme file is supposed to serve as quick guide: for a complete description please refer to the Manual.
+This Readme file serves as a quick guide: for a complete description please refer to the pdf Manual.
 
 ## About bands4vasp
 
