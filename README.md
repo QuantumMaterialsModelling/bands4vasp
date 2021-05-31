@@ -23,7 +23,7 @@ This is the first beta version of the package. Please report us any bug. Comment
 
 ### Installation
 
-The installation requires the **bands4vasp_v**< version >**.tar.gz** and **install.sh** files. The installation is perfromed by executing the instructions in the install.sh file, by running the bash command:
+The installation requires the **bands4vasp_v**<version>**.tar.gz** and **install.sh** files. The installation is perfromed by executing the install.sh file, by running the bash command from the root folder of bands4vasp:
   
 > $ source ./install.sh  
         
