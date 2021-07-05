@@ -120,7 +120,7 @@ The bands4vasp package can read the following files from VASP calculations:
 
 The **INPAR** files contains all parameters needed for executing bands4vasp.
 Default values are used for variables eventually not specified in the INPAR file (the INPAR file with the default values is stored in the installation directory). The list of variables used in the execution of bands4vasp get printed in the **OUTPAR** file.
-A complete description of all variables controlled by the INPAR is provided in hte Manual.
+A complete description of all variables controlled by the INPAR is provided in the Manual.
 
 ***
   
