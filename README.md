@@ -13,9 +13,9 @@ The **bands4vasp** post-processing package is tailored for the analysis and visu
 The package can be used in any _Bash environment_, it is written in _FORTRAN_ and it uses _Gnuplot_ for data visualization.
 
 If you use this code please cite:\
-D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli, "Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions",  J. Phys. Chem. C 125, 12921–12928 (2021). DOI:10.1021/acs.jpcc.1c02318 ( http://arxiv.org/abs/2103.09540 ).
+D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli, "Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions",  J. Phys. Chem. C 125, 12921–12928 (2021). DOI:10.1021/acs.jpcc.1c02318 (arXiv:2103.09540).
 
-About this version, bands4vasp v0.1 (May 2021):
+About this version, bands4vasp v0.2 (July 2021):
 This is the first beta version of the package. Please report us any bug. Comments and suggestions are also welcome.
 
 ***
