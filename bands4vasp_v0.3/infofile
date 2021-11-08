@@ -1,0 +1,58 @@
+Usage: b4vasp [OPTION] ... [file]
+Options:
+  --help                  Display this information.
+  --info                  The same as --help.
+  --inpar                 copy the default INPAR file to your current directory.
+  --fermi [file]          make a fermisurface calculation.
+  --pre-[options]         preparing VASP calculations, by copying a folder with
+                          prepared VASP files and changing the KPOINTS file,
+                          depending on the type of calculations specified by
+                          the following options:
+
+  --pre-lines $1 $2       prepare line calculations for each pair of k-points in
+                          KPOINTS file after the flag '#makepath'.
+                          $1 = directory for the prepared VASP files
+                          $2 = name for the multidirectory
+  --pre-circle $1 $2 $3   prepare radial centered line calculations given by the
+                          coordinates in the KPOINTS file after the flag '#makepath'.
+                          There should be 3 points:
+                          1.The first point is the center of the circle
+                          2.The second point is the start point
+                          3.The third point is the end point
+                          It calculates the points along the circle in
+                          a mathematically positv sense.
+                          The calculation will be done as a line from
+                          the given center to each calculated point.
+                          $1 = directory for the prepared VASP files
+                          $2 = number of equidistant points on the circle
+                          $3 = name for the multidirectory
+  --pre-surface $1 $2 $3  prepare equidistant line calculations with a rectangle defined
+                          by the coordinates given in the KPOINTS file after the flag '#makepath'.
+                          There should be 3 points:
+                          1.The first corner of the rectangle where the calculation starts
+                          2.The second corner of the rectangle, which defines the path
+                            of the line calculations
+                          3.The third corner of the surface, which defines
+                            the translation direction of the lines
+                          $1 = directory for the prepared VASP files
+                          $2 = number of equidistant lines on the surface
+                          $3 = name for the multidirectory
+
+
+Passing files:
+ There are 3 ways to pass files to bands4vasp
+  
+ -Single path:   If you only have one path of calculation data you can go eather in the directory
+                 and just execute bands4vasp or you can pass the directory in which the data are stored.
+                 => b4vasp "directory"
+
+ -Multi path:    If you have more than one path (e.g. Fermisurface) you should named it equaly dispite
+                 a number in the name, or simply use the --pre options of bands4vasp. You can start
+                 the multipath calculation by passing a %-sign as a placeholder for numbers. If we have:
+                 "1line 2line 3line 4line 5line 6line 7line ..." we can simply enter:
+                 => b4vasp %line
+                
+ -Fermisurface:  For a Fermisurface you pass the multi path structure with a %-sign as discribed befor.
+                 You only add the option --fermi to the command:
+                 => b4vasp --fermi %line
+
