@@ -17,7 +17,7 @@ D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli, "Electronic state unfoldi
 
 About this version, bands4vasp v0.3 (November 2021):
 This is a beta version of the package: Please report us any bug, comments and suggestions are also welcome.
-[Solved: Issue with post-processing non-collinear calculations]
+[Solved: bug with post-processing non-collinear calculations]
 
 ***
 
