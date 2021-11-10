@@ -18,8 +18,8 @@ If you use this code please cite:\
 D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli, "Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions",  J. Phys. Chem. C 125, 12921–12928 (2021). DOI:10.1021/acs.jpcc.1c02318 (arXiv:2103.09540).
 
 About this version, bands4vasp v0.3 (November 2021):
-This is a beta version of the package: Please report us any bug, comments and suggestions are also welcome.
-[Solved: bug with post-processing non-collinear calculations]
+This is a beta version of the package: Please report us any bug; comments and suggestions are also welcome.\
+[Solved: bug in post-processing non-collinear calculations]
 
 ***
 
