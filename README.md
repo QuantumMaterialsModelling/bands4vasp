@@ -9,8 +9,10 @@ This Readme file serves as a quick guide: for a complete description please refe
 
 ## About bands4vasp
 
-The **bands4vasp** post-processing package is tailored for the analysis and visualisation of band structures, Fermi surfaces and spectral functions obtained from VASP calculations, with special focus on unfolding simulations \[Processing of unfolding calculations requires a patched version of VASP that will be available soon\].\
-The package can be used in any _Bash environment_, it is written in _FORTRAN_ and it uses _Gnuplot_ for data visualization.
+The **bands4vasp** post-processing package is tailored for the analysis and visualisation of band structures, Fermi surfaces and spectral functions obtained from VASP calculations, with special focus on unfolding calculations.
+
+Note that a patched version of VASP is required to process unfolding calculations:
+https://github.com/QuantumMaterialsModelling/UnfoldingPatch4vasp
 
 If you use this code please cite:\
 D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli, "Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions",  J. Phys. Chem. C 125, 12921–12928 (2021). DOI:10.1021/acs.jpcc.1c02318 (arXiv:2103.09540).
@@ -31,7 +33,9 @@ The installation requires the **bands4vasp_v**\<version\>**.tar.gz** and **insta
         
 ### Usage
 
-bands4vasp can be executed by the following bash command
+The package can be used in any _Bash environment_, it is written in _FORTRAN_ and it uses _Gnuplot_ for data visualization.
+
+The bands4vasp suite can be executed by the following bash command
 
 > b4vasp \[OPTIONS\] ... \[file\]
 
