@@ -11,9 +11,7 @@ MODULE EBS_METHODS
  TYPE( BAND ), DIMENSION(:,:,:), ALLOCATABLE :: EBS
  LOGICAL, DIMENSION(:,:), ALLOCATABLE :: LPOS
 
-
  CONTAINS
-
 
 ELEMENTAL  SUBROUTINE ZERO(KBS)
   TYPE( BAND ), INTENT(INOUT) :: KBS
@@ -84,16 +82,16 @@ END SUBROUTINE CLEAN_DISPLAY_LINE
 
 
 
-SUBROUTINE READ_INPAR(PATHNAME,LPATH)
+SUBROUTINE READ_INPAR(INPAR)
  IMPLICIT NONE
  INTEGER :: I,POS,IOST
  REAL(DP) :: RDUM
  CHARACTER(1) :: CDUM
  CHARACTER(50) :: CHARA
- CHARACTER(3), DIMENSION(:), ALLOCATABLE :: PATHNAME
- LOGICAL :: LPATH,LORBIT
- ALLOCATE(PATHNAME(N%PATH+1))
- OPEN(UNIT=11, FILE='tempINPAR', STATUS='OLD', ACTION='READ')
+ CHARACTER(300) :: INPAR
+ LOGICAL :: LORBIT
+
+ OPEN(UNIT=11, FILE=TRIM(INPAR), STATUS='OLD', ACTION='READ')
  READ(11,'(A)') CHARA
 
  POS=SCAN(CHARA,' ')
@@ -210,8 +208,17 @@ SUBROUTINE READ_INPAR(PATHNAME,LPATH)
   ELSE
     PAR%SLIMSPEC=.FALSE.
   END IF
-  READ(11,*) PAR%FGRID
 
+  READ(11,'(A)') CHARA
+  READ(CHARA,*,IOSTAT=IOST) I
+
+  IF (IOST /= 0 .OR. I < 0 .OR. I > 100) THEN
+    WRITE(*,'(A)') 'WARNING: FGRID must be an integer value between 0 and 100!'
+    WRITE(*,'(A)') '         Set FGRID to 0.'
+    PAR%FGRID = 0
+  ELSE
+    PAR%FGRID = I
+  END IF
 
   READ(11,'(A)') CHARA
   IF(SCAN(CHARA,'-')>0)THEN
@@ -259,6 +266,28 @@ SUBROUTINE READ_INPAR(PATHNAME,LPATH)
   ELSE
     PAR%MULTIFERMI=.FALSE.
   END IF
+!read in 30 lines
+
+  DO I=1,11
+    READ(11,*)
+  END DO
+
+  READ(11,'(A)') CHARA                 ! Zeile lesen
+  CHARA = ADJUSTL(CHARA)               ! führende Leerzeichen entfernen
+
+  IF (LEN_TRIM(CHARA) > 0) THEN
+     SELECT CASE (CHARA(1:1))          ! nur erstes Zeichen auswerten
+     CASE ('c','C')
+        PAR%FSUREDGEVEC = 2            ! cartesian
+     CASE ('r','R')
+        PAR%FSUREDGEVEC = 1            ! reciprocal
+     CASE DEFAULT
+        PAR%FSUREDGEVEC = 0            ! none / unbekannt
+     END SELECT
+  ELSE
+     PAR%FSUREDGEVEC = 0               ! leere Zeile ⇒ none
+  END IF
+
  
   CLOSE(UNIT=11)
 
@@ -277,7 +306,7 @@ SUBROUTINE READ_INPAR(PATHNAME,LPATH)
    PAR%WDIF(2)=PAR%FBORDER(2)
  END IF
 
- OPEN(UNIT=11, FILE='tempINPAR', STATUS='OLD',POSITION='APPEND', ACTION='WRITE')
+ OPEN(UNIT=11, FILE=TRIM(INPAR), STATUS='OLD',POSITION='APPEND', ACTION='WRITE')
 
  IF(PAR%WDIF(1)*PAR%WDIF(2)>=0.0_DP)THEN
    PAR%ROOTSCALC=.FALSE.
@@ -294,17 +323,17 @@ END SUBROUTINE READ_INPAR
 
 
 !*************************** Read all filenames ********************************
-SUBROUTINE GET_FILENAMES(FNAMEDIR,FILEDIR,PLOTFILE,BANDSPEC,OUTGRID,FERMIFILE,FITTPOINTS, &
-            & ACOLBAND,FSUR,FSURSPEC,STATFILE,LATTFILE,SPINFILE, ORBITSTATS )
-  CHARACTER(LEN=*) :: FNAMEDIR,FILEDIR,PLOTFILE,BANDSPEC,OUTGRID,FERMIFILE,FITTPOINTS
-  CHARACTER(LEN=*) :: ACOLBAND,FSUR,FSURSPEC,STATFILE,LATTFILE,SPINFILE,ORBITSTATS
+SUBROUTINE GET_FILENAMES(FNAMEDIR,TMPDIR,FILEDIR,INPAR,PLOTFILE,BANDSPEC,OUTGRID,FERMIFILE, &
+            & FITTPOINTS,ACOLBAND,FSUR,FSURSPEC,STATFILE,LATTFILE,SPINFILE, ORBITSTATS )
+  CHARACTER(LEN=*) :: FNAMEDIR,FILEDIR,INPAR,PLOTFILE,BANDSPEC,OUTGRID,FERMIFILE,FITTPOINTS
+  CHARACTER(LEN=*) :: ACOLBAND,FSUR,FSURSPEC,STATFILE,LATTFILE,SPINFILE,ORBITSTATS,TMPDIR
   CHARACTER(LEN=50) :: DATADIR
   INTEGER :: I,UN=34
 
 
   OPEN(UNIT=UN,FILE=TRIM(FNAMEDIR),STATUS='OLD',ACTION='READ')
     READ(UN,'(A)') FILEDIR
-    READ(UN,*)
+    READ(UN,'(A)') INPAR
     READ(UN,'(A)') PLOTFILE
     READ(UN,'(A)') BANDSPEC
     READ(UN,'(A)') OUTGRID
@@ -340,6 +369,7 @@ SUBROUTINE GET_FILENAMES(FNAMEDIR,FILEDIR,PLOTFILE,BANDSPEC,OUTGRID,FERMIFILE,FI
   ORBITSTATS=TRIM(DATADIR)//TRIM(ORBITSTATS)
   LATTFILE=TRIM(DATADIR)//TRIM(LATTFILE)
   SPINFILE=TRIM(DATADIR)//TRIM(SPINFILE)
+  INPAR=TRIM(TMPDIR)//'/'//TRIM(INPAR)
 
 END SUBROUTINE GET_FILENAMES
 
@@ -609,7 +639,7 @@ END SUBROUTINE READHEAD_PROCAR_PRIM
 
 
 
-SUBROUTINE READBODY_PROCAR_PRIM(FILEDIR,TEBS,KGRID,LATTICE,LUNFOLD,LFINISH)
+SUBROUTINE READBODY_PROCAR_PRIM(FILEDIR,TMPDIR,TEBS,KGRID,LATTICE,LUNFOLD,LFINISH)
  IMPLICIT NONE
  TYPE( BAND ), DIMENSION(:), ALLOCATABLE :: TEBS
  TYPE( LATT ) :: LATTICE
@@ -620,7 +650,7 @@ SUBROUTINE READBODY_PROCAR_PRIM(FILEDIR,TEBS,KGRID,LATTICE,LUNFOLD,LFINISH)
  INTEGER ::  I, IOCHECK,NKPT, J, IJUMP, PROG, UNARRAY,NBAND
  INTEGER :: T1,T2,T3,UN,ND,K,B,P,COL,NION,IND, BND,SPN
  INTEGER,DIMENSION(3) :: T
- CHARACTER(LEN=*) :: FILEDIR
+ CHARACTER(LEN=*) :: FILEDIR,TMPDIR
  CHARACTER(16) :: JUNK
  CHARACTER(20) :: TARRAY
  CHARACTER(200) :: DATANAME,FENERGYFILE
@@ -632,7 +662,7 @@ SUBROUTINE READBODY_PROCAR_PRIM(FILEDIR,TEBS,KGRID,LATTICE,LUNFOLD,LFINISH)
  DIST=0.0_DP
  LFINISH=.FALSE.
  UNARRAY=9924
- TARRAY='tempprocararray.temp'
+ TARRAY=TRIM(TMPDIR)//'/tempprocararray.temp'
  PAR%SPN=1
  IF(PAR%FORB==0)THEN
    WRITE(*,'(A,A)',ADVANCE='NO') 'Selected all orbitals :: ',TRIM(PAR%ORBNAMES(1))
@@ -1037,7 +1067,7 @@ END SUBROUTINE READHEAD_PRJCAR
 
 
 
-SUBROUTINE READ_PRJCAR(FILEDIR, TEBS, KGRID, LATTICE )
+SUBROUTINE READ_PRJCAR(FILEDIR, TMPDIR, TEBS, KGRID, LATTICE )
  IMPLICIT NONE
  TYPE( BAND ), DIMENSION(:), ALLOCATABLE :: TEBS
  TYPE( LATT ) :: LATTICE
@@ -1051,7 +1081,7 @@ SUBROUTINE READ_PRJCAR(FILEDIR, TEBS, KGRID, LATTICE )
  INTEGER :: ISTAT,IDUM1,IDUM2,KEFF
  INTEGER,DIMENSION(3) :: IDUM,T
  INTEGER, DIMENSION(:), ALLOCATABLE :: MAP,KMAP
- CHARACTER(LEN=*) :: FILEDIR
+ CHARACTER(LEN=*) :: FILEDIR,TMPDIR
  CHARACTER(1) :: A
  CHARACTER(20) :: FORMA,TARRAY
  CHARACTER(200) :: DATANAME,FENERGYFILE
@@ -1062,7 +1092,7 @@ SUBROUTINE READ_PRJCAR(FILEDIR, TEBS, KGRID, LATTICE )
  TOTKPT=0
  TOTDIST=0.0_DP
  UNARRAY=9924
- TARRAY='tempprjcararray.temp'
+ TARRAY=TRIM(TMPDIR)//'/tempprjcararray.temp'
  T=(/1,0,1/)
  KSCF0=(/0.0_DP,0.0_DP,0.0_DP/)
  MNKPT=MAXVAL(NFILE(:)%KPTS)
@@ -2291,49 +2321,6 @@ END SUBROUTINE NEIGHBOUR
 
 
 
-!***************************************************************************
-!***  This Subroutine looks for the next Neighbour to position 'K' *********
-!***  with the value 'Energy' and position 'K' and saves it in 'NEBS' ******
-!***  LEXIST = .TRUE. >> It founds a neighbour on position 'NK' ************
-!***  If K is negative it looks on the left hand side **********************
-!***************************************************************************
-
-SUBROUTINE NEIGHBOUR_old(ENERGY,K,BND,LEXIST,NEBS,NJ,SPN)
- TYPE( BAND ) :: NEBS
- REAL(KIND=DP) :: ENERGY
- INTEGER :: K, NK, J, NJ, NKO,BND,SPN
- LOGICAL :: LEXIST, FIRST
-  FIRST=.TRUE.
-  LEXIST=.FALSE.
-  NK=ABS(K+1)
-  IF (( NK > N%TKPTS ).OR.( NK < 1 )) RETURN
-  DO J=1,N%SAMEK
-    IF(LPOS(NK,J))THEN
-      IF((.NOT.PAR%BAND).AND.(BND/=EBS(NK,J,SPN)%BND))CYCLE
-      IF (FIRST) THEN
-        NEBS=EBS(NK,J,SPN)
-        NJ=J
-        LEXIST=.TRUE.
-        FIRST=.FALSE.
-      ELSE
-        IF (ABS(ENERGY-EBS(NK,J,SPN)%E)<ABS(ENERGY-NEBS%E)) THEN
-          NEBS=EBS(NK,J,SPN)
-          NJ=J
-        END IF
-      END IF
-    END IF
-  END DO
-  IF (LEXIST) THEN
-    IF(ABS(ENERGY-NEBS%E)<=PAR%EGAP) RETURN
-    LEXIST=.FALSE.
-  END IF
- 
-END SUBROUTINE NEIGHBOUR_old
-
-
-
-
-
 SUBROUTINE LINEAR_FIT( FP, ROOTS, PLOTFILE, SPN )
  IMPLICIT NONE
  TYPE( BAND ), DIMENSION(:,:), INTENT(INOUT) :: FP
@@ -2895,7 +2882,7 @@ SUBROUTINE FERMISURFACE(TEBS,OROOTS,ROOTSXYZ,KGRID,LATTICE,BANDSPEC,FERMIFILE,SP
  INTEGER, DIMENSION(3) :: VEC
  REAL(DP),DIMENSION(3,3) :: PX,PXNORM,PXINV,LWORK,BINV
  REAL(DP),DIMENSION(4,3) :: KCORNERS
- REAL(DP),DIMENSION(3) :: ORIGIN,VEC0,NVEC,RNVEC,VEC1,VEC2,AREAL,BREAL
+ REAL(DP),DIMENSION(3) :: ORIGIN,VEC0,NVEC,RNVEC,PVEC,VEC1,VEC2,AREAL,BREAL
  REAL(DP),DIMENSION(2) :: SVEC,FXY,XBORDER,YBORDER,NXBORDER,NYBORDER
  REAL(DP) :: ANGLE,OANGLE,XDIST,XMAX,YDIST,YMAX,D,AS,AO,ZMIN,ZMAX
  INTEGER :: I,J,K,KPT,P,RN,SIGN1,SIGN2,FILETYPE,CON,IOCHECK,ONUM,OEND
@@ -2971,8 +2958,6 @@ SUBROUTINE FERMISURFACE(TEBS,OROOTS,ROOTSXYZ,KGRID,LATTICE,BANDSPEC,FERMIFILE,SP
  XDIST=0.0_DP
  XBORDER=0.0_DP
  YBORDER=0.0_DP
-
-
 
 
 !============ figure out the basisvecors for the surface ===============
@@ -3191,17 +3176,22 @@ END IF
 
 
 !************************* Calculate the k-vectors of the outer points ***************************
+IF (PAR%FSUREDGEVEC < 2) THEN
  BINV=LATTICE%B
  CALL INVERT_MATRIX(BINV)
+END IF
 
 VEC1(1)=XBORDER(1)
 VEC1(2)=YBORDER(1)
 VEC1(3)=0.0_DP
 VEC2=DMATMUL(PXNORM,VEC1)+ORIGIN
 
-CALL CHANGE_BASIS(BINV,VEC2,VEC1)
-
-KCORNERS(1,:)=VEC1(:)
+IF (PAR%FSUREDGEVEC < 2) THEN
+  CALL CHANGE_BASIS(BINV,VEC2,VEC1)
+  KCORNERS(1,:)=VEC1(:)
+ELSE
+  KCORNERS(1,:)=VEC2(:)
+END IF
 
 VEC1(1)=XBORDER(2)
 VEC1(2)=YBORDER(1)
@@ -3209,104 +3199,123 @@ VEC1(3)=0.0_DP
 
 VEC2=DMATMUL(PXNORM,VEC1)+ORIGIN
 
-CALL CHANGE_BASIS(BINV,VEC2,VEC1)
-
-KCORNERS(2,:)=VEC1(:)
+IF (PAR%FSUREDGEVEC < 2) THEN
+  CALL CHANGE_BASIS(BINV,VEC2,VEC1)
+  KCORNERS(2,:)=VEC1(:)
+ ELSE 
+  KCORNERS(2,:)=VEC2(:)
+END IF
 
 VEC1(1)=XBORDER(2)
 VEC1(2)=YBORDER(2)
 VEC1(3)=0.0_DP
 VEC2=DMATMUL(PXNORM,VEC1)+ORIGIN
 
-CALL CHANGE_BASIS(BINV,VEC2,VEC1)
-
-
-KCORNERS(3,:)=VEC1(:)
-
+IF (PAR%FSUREDGEVEC < 2) THEN
+  CALL CHANGE_BASIS(BINV,VEC2,VEC1)
+  KCORNERS(3,:)=VEC1(:)
+ ELSE 
+  KCORNERS(3,:)=VEC2(:)
+END IF
 
 VEC1(1)=XBORDER(1)
 VEC1(2)=YBORDER(2)
 VEC1(3)=0.0_DP
 VEC2=DMATMUL(PXNORM,VEC1)+ORIGIN
 
-CALL CHANGE_BASIS(BINV,VEC2,VEC1)
-
-KCORNERS(4,:)=VEC1(:)
-
-
- !************************************ Spectral Fermisurface *******************************
- IF(PAR%SPECFUN.AND.N%SPECDAT(SPN))THEN
-
-  IF(.NOT.PAR%SLIMSPEC)ALLOCATE(FSPECXY(PAR%IREFLECT*N%SPEC(SPN),4))
+IF (PAR%FSUREDGEVEC < 2) THEN
+  CALL CHANGE_BASIS(BINV,VEC2,VEC1)
+  KCORNERS(4,:)=VEC1(:)
+ELSE
+  KCORNERS(4,:)=VEC2(:)
+END IF
 
 
-    OPEN(UNIT=201,FILE=TRIM(SFILE),STATUS='REPLACE',ACTION='WRITE')
-    WRITE(201,'(A3,2F18.12)') '#x ',XBORDER
-    WRITE(201,'(A3,2F18.12)') '#y ',YBORDER
-    DO I=1,4
-      WRITE(201,'(A6,I1,A1,2(F0.4,", "),F0.4)') '#KEDGE',I,' ',KCORNERS(I,:)
-    END DO
-    SIGN1=1
-    SIGN2=1
+!************************************ Spectral Fermi Surface *******************************
+IF (PAR%SPECFUN .AND. N%SPECDAT(SPN)) THEN
 
-    IOCHECK=0
-    CON=0
+  ! Allocate memory for FSPECXY only if needed (not in slim mode)
+  IF (.NOT. PAR%SLIMSPEC) THEN
+    ALLOCATE(FSPECXY(PAR%IREFLECT * N%SPEC(SPN), 4))
+  END IF
 
-    DO K=1,PAR%IREFLECT
-       
-       OPEN(UNIT=21,FILE=TRIM(BFILE),STATUS='OLD',ACTION='READ')
-    DO I=1,N%SPEC(SPN)
+  ! Open output file and write header information
+  OPEN(UNIT=201, FILE=TRIM(SFILE), STATUS='REPLACE', ACTION='WRITE')
+  WRITE(201, '(A3,2F18.12)') '#x ', XBORDER
+  WRITE(201, '(A3,2F18.12)') '#y ', YBORDER
+  DO I = 1, 4
+    WRITE(201, '(A6,I1,A1,2(F0.4,", "),F0.4)') '#KEDGE', I, ' ', KCORNERS(I, :)
+  END DO
 
-         PROG=PROG+1
-         CALL WRITE_PROGRESS(PROG,HPROG)
-         READ(21,'(I5,3(F22.16,1X))',IOSTAT=IOCHECK) P,YDIST,AS,AO
-         IF(IOCHECK/=0)EXIT
-         IF(P>1)THEN
-           YDIST=YDIST-KGRID(P-1)%DIST
-         ELSE
-           FXY(2)=YDIST
-         END IF
+  SIGN1 = 1
+  SIGN2 = 1
 
-         D=KDISTANCE(KGRID(P)%A,KGRID(P)%B,LATTICE%B)
-         VEC1=KGRID(P)%B-KGRID(P)%A
-         VEC1=KGRID(P)%A+(YDIST/D)*VEC1
-         CALL CHANGE_BASIS(LATTICE%B,VEC1,AREAL)
-         VEC2=DMATMUL(PXINV,AREAL)
-         FXY(1:2)=VEC2(1:2)
+  IOCHECK = 0
+  CON = 0
+  PROG = 0  ! Initialize progress counter if not already set outside
 
-      IF(PAR%IREFLECT==4)THEN
-        FXY(1)=SYM%S2D(1,1)+SIGN1*(FXY(1)-SYM%S2D(1,1))
-        FXY(2)=SYM%S2D(1,2)+SIGN2*(FXY(2)-SYM%S2D(1,2))
-      ELSE IF((PAR%IREFLECT==2).AND.(K==2))THEN
-         FXY=AXIAL_REFLECTION(SYM%S2D(1,:),SYM%S2D(2,:),FXY)
+  DO K = 1, PAR%IREFLECT
+    ! Open input data file for reading
+    OPEN(UNIT=21, FILE=TRIM(BFILE), STATUS='OLD', ACTION='READ')
+
+    DO I = 1, N%SPEC(SPN)
+      PROG = PROG + 1
+      CALL WRITE_PROGRESS(PROG, HPROG)
+
+      ! Read spectral data for each point
+      READ(21, '(I5,3(F22.16,1X))', IOSTAT=IOCHECK) P, YDIST, AS, AO
+      IF (IOCHECK /= 0) EXIT
+
+      ! Adjust YDIST for line if not the first point
+      IF (P > 1) THEN
+        YDIST = YDIST - KGRID(P - 1)%DIST
       END IF
-      WRITE(201,'(4F18.12)') FXY(1), FXY(2), AS, AO
-      IF(.NOT.PAR%SLIMSPEC)THEN
-         CON=CON+1
-         FSPECXY(CON,:)=(/ FXY(1), FXY(2), AS, AO /)
+
+      ! Compute the absolute k-space position
+      D = KDISTANCE(KGRID(P)%A, KGRID(P)%B, LATTICE%B)
+      VEC1 = KGRID(P)%A + (YDIST / D) * (KGRID(P)%B - KGRID(P)%A)
+      CALL CHANGE_BASIS(LATTICE%B, VEC1, AREAL)
+      VEC2 = DMATMUL(PXINV, AREAL)
+      FXY(1:2) = VEC2(1:2)
+
+      ! Apply symmetry operations depending on reflection settings
+      IF (PAR%IREFLECT == 4) THEN
+        FXY(1) = SYM%S2D(1,1) + SIGN1 * (FXY(1) - SYM%S2D(1,1))
+        FXY(2) = SYM%S2D(1,2) + SIGN2 * (FXY(2) - SYM%S2D(1,2))
+      ELSE IF ((PAR%IREFLECT == 2) .AND. (K == 2)) THEN
+        FXY = AXIAL_REFLECTION(SYM%S2D(1,:), SYM%S2D(2,:), FXY)
+      END IF
+
+      ! Write the coordinates and spectral data to output file
+      WRITE(201, '(4F18.12)') FXY(1), FXY(2), AS, AO
+      IF (.NOT. PAR%SLIMSPEC) THEN
+        CON = CON + 1
+        FSPECXY(CON, :) = (/ FXY(1), FXY(2), AS, AO /)
       END IF
     END DO
-    SIGN2=-1*SIGN2
-    IF(SIGN2>0)SIGN1=-1*SIGN1
 
-     REWIND(21)
-     CLOSE(21)
+    ! Update symmetry signs for the next reflection
+    SIGN2 = -SIGN2
+    IF (SIGN2 > 0) SIGN1 = -SIGN1
 
-    END DO
-   CLOSE(201)
+    REWIND(21)
+    CLOSE(21)
+  END DO
 
- 
-   IF(.NOT.PAR%SLIMSPEC)THEN
-     IF(ALLOCATED(FSU))DEALLOCATE(FSU)
-     CALL SORT(FSPECXY,FSU)
-     DEALLOCATE(FSPECXY)
-     CALL UNIQUE(FSU,FSPECXY)
-     CALL MAKE_PM3D(FSPECXY,XBORDER,YBORDER,TRIM(SPM3DFILE))
-     PROG=PROG+PAR%IREFLECT*N%SPEC(SPN)
-     CALL WRITE_PROGRESS(PROG,HPROG)
-   END IF
+  CLOSE(201)
 
- END IF
+  ! Post-processing: sort, deduplicate, and grid the data for pm3d plotting if not in slim mode
+  IF (.NOT. PAR%SLIMSPEC) THEN
+    IF (ALLOCATED(FSU)) DEALLOCATE(FSU)
+    CALL SORT(FSPECXY, FSU)
+    DEALLOCATE(FSPECXY)
+    CALL UNIQUE(FSU, FSPECXY)
+    CALL MAKE_PM3D(FSPECXY, XBORDER, YBORDER, TRIM(SPM3DFILE))
+    PROG = PROG + PAR%IREFLECT * N%SPEC(SPN)
+    CALL WRITE_PROGRESS(PROG, HPROG)
+  END IF
+
+END IF
 
 
 !*********************************************************************************************
@@ -3360,6 +3369,14 @@ IF(N%FIT(SPN)>0)THEN
     DO I=1,4
       WRITE(211,'(A6,I1,A1,2(F0.4,", "),F0.4)') '#KEDGE',I,' ',KCORNERS(I,:)
     END DO
+
+  IF (PAR%FSUREDGEVEC == 2) THEN
+    WRITE(211,'(A7)') '#KVEC c'
+  ELSE IF (PAR%FSUREDGEVEC == 1) THEN
+    WRITE(211,'(A7)') '#KVEC r'
+  ELSE
+    WRITE(211,'(A7)') '#KVEC n'
+  END IF
 
   SIGN1=1
   SIGN2=1
@@ -3495,243 +3512,194 @@ END SUBROUTINE PRINT_FGRID
 
 
 
+SUBROUTINE MAKE_PM3D(DAT, XBORDER, YBORDER, PM3DFILE)
+  ! Generates a dense pm3d-compatible grid file for Gnuplot visualization
 
-SUBROUTINE MAKE_PM3D(DAT,XBORDER,YBORDER,PM3DFILE)
-  REAL(DP),DIMENSION(:,:),INTENT(IN) :: DAT
-  REAL(DP),DIMENSION(2) :: XBORDER,YBORDER
-  REAL(DP),PARAMETER :: THIN=0.00001_DP
-  REAL(DP) :: P,X,Y,XDIST,YDIST,X2,Y2,XDISTEMP,YDISTEMP,MINDIST=0.001_DP
-  REAL(DP),DIMENSION(:),ALLOCATABLE :: MXDIST,MYDIST
-  CHARACTER(LEN=*) :: PM3DFILE
-  INTEGER :: I,IPOS(1),J,D1,D2,D5,D6,IX,IY,BCOUNT,RESX,RESY,UN=318
-  LOGICAL :: LFX=.TRUE.,LFY=.TRUE.
-  LOGICAL, DIMENSION(:),ALLOCATABLE :: DMASK
+  IMPLICIT NONE
+  REAL(DP), DIMENSION(:,:), INTENT(IN) :: DAT    ! (N,3): X, Y, Value
+  REAL(DP), DIMENSION(2),  INTENT(IN) :: XBORDER, YBORDER
+  CHARACTER(LEN=*),        INTENT(IN) :: PM3DFILE
 
-  XDIST=0.0_DP
-  YDIST=0.0_DP
-  D1=SIZE(DAT,1)
-  D2=SIZE(DAT,2)
-  ALLOCATE(MXDIST(D1),MYDIST(D1),DMASK(D1))
-  MXDIST=0.0_DP
-  MYDIST=0.0_DP
-  DO I=1,D1
-    IF(DAT(I,3)<THIN)CYCLE
-    LFX=.TRUE.
-    LFY=.TRUE.
-    DO J=1,D1
-      IF(I==J)CYCLE
-      IF(DAT(J,3)<THIN)CYCLE
-      XDISTEMP=ABS(DAT(I,1)-DAT(J,1))
-      IF(XDISTEMP>MINDIST)THEN
-         IF((XDISTEMP<MXDIST(I)).OR.LFX)THEN
-           MXDIST(I)=XDISTEMP
-           LFX=.FALSE.
-         END IF
-      END IF
-      YDISTEMP=ABS(DAT(I,2)-DAT(J,2))
-      IF(YDISTEMP>MINDIST)THEN
-         IF((YDISTEMP<MYDIST(I)).OR.LFY)THEN
-           MYDIST(I)=YDISTEMP
-           LFY=.FALSE.
-         END IF
-      END IF
-    END DO
-  END DO
+  INTEGER, PARAMETER :: UN = 318, MAXRES = 401    ! Set higher value for higher resolution
+  REAL(DP), PARAMETER :: THIN = 1E-9_DP           ! Use a lower threshold for more detail
 
-  D5=D1/2
-  D6=D1/6
-  DMASK=.TRUE.
-  DO I=1,D5
-    IPOS=MINLOC(MXDIST,DMASK)
-    DMASK(IPOS(1))=.FALSE.
-  END DO
+  INTEGER :: IX, IY, I, D1, BCOUNT, RESX, RESY
+  REAL(DP) :: X, Y, XDIST, YDIST, X2, Y2, P
 
-  DO I=1,D6
-    IPOS=MAXLOC(MXDIST,DMASK)
-    DMASK(IPOS(1))=.FALSE.
-  END DO 
+  D1 = SIZE(DAT, 1)
+  ! --- Grid resolution: make it high for sharper plots ---
+  RESX = MAX(MIN(MAXRES, NINT((XBORDER(2)-XBORDER(1)) / 0.0012_DP)), 3)
+  RESY = MAX(MIN(MAXRES, NINT((YBORDER(2)-YBORDER(1)) / 0.0012_DP)), 3)
 
-  XDIST=0.0_DP
-  DO I=1,D1
-    IF(DMASK(I)) XDIST=XDIST+MXDIST(I)
-  END DO
+  IF (MOD(RESX,2) == 0) RESX = RESX - 1
+  IF (MOD(RESY,2) == 0) RESY = RESY - 1
 
-  XDIST=XDIST/REAL(D1-D5-D6,DP)
+  XDIST = (XBORDER(2) - XBORDER(1)) / REAL(RESX-1, DP)
+  YDIST = (YBORDER(2) - YBORDER(1)) / REAL(RESY-1, DP)
+  X2 = 0.5_DP * XDIST
+  Y2 = 0.5_DP * YDIST
 
-  DMASK=.TRUE.
-  DO I=1,D5
-    IPOS=MINLOC(MYDIST,DMASK)
-    DMASK(IPOS(1))=.FALSE.
-  END DO
-
-  DO I=1,D6
-    IPOS=MAXLOC(MYDIST,DMASK)
-    DMASK(IPOS(1))=.FALSE.
-  END DO 
-
-  YDIST=0.0_DP
-  DO I=1,D1
-    IF(DMASK(I)) YDIST=YDIST+MYDIST(I)
-  END DO
-
-  YDIST=YDIST/REAL(D1-D5-D6,DP)
-
-
-  RESX=MAX(MIN(NINT((XBORDER(2)-XBORDER(1))/XDIST)-1,100),3)
-  RESY=MAX(MIN(NINT((YBORDER(2)-YBORDER(1))/YDIST)-1,100),3)
-  
-  IF(MOD(RESX,2)==0)RESX=RESX-1
-  IF(MOD(RESX,2)==0)RESY=RESY-1
-
-
-  XDIST=(XBORDER(2)-XBORDER(1))/REAL((RESX-1),DP)
-  YDIST=(YBORDER(2)-YBORDER(1))/REAL((RESY-1),DP)
-  X2=0.5_DP*XDIST
-  Y2=0.5_DP*YDIST
-  X=XBORDER(1)
-  Y=YBORDER(1)
-  OPEN(UNIT=UN,FILE=TRIM(PM3DFILE),ACTION='WRITE',STATUS='REPLACE')
-    DO IX=1,RESX
-      Y=YBORDER(1)
-      DO IY=1,RESY
-        P=0.0_DP
-        BCOUNT=0
-        DO I=1,D1
-          IF( ((ABS(DAT(I,1)-X)<X2).OR.(DAT(I,1)==(X-X2))).AND. &
-          &   (( ABS(DAT(I,2)-Y)<Y2).OR.(DAT(I,2)==(Y-Y2)))) THEN
-             P=P+DAT(I,3)
-             BCOUNT=BCOUNT+1
+  ! --- Write output grid ---
+  OPEN(UNIT=UN, FILE=TRIM(PM3DFILE), ACTION='WRITE', STATUS='REPLACE')
+  DO IX = 1, RESX
+    X = XBORDER(1) + (IX-1)*XDIST
+    DO IY = 1, RESY
+      Y = YBORDER(1) + (IY-1)*YDIST
+      P = 0._DP
+      BCOUNT = 0
+      ! -- Bin-based mean (fast and robust) --
+      DO I = 1, D1
+        IF (DAT(I,3) > THIN) THEN
+          IF (ABS(DAT(I,1) - X) < X2 .AND. ABS(DAT(I,2) - Y) < Y2) THEN
+            P = P + DAT(I,3)
+            BCOUNT = BCOUNT + 1
           END IF
-
-        END DO
-
-       IF(BCOUNT==0)THEN
-         WRITE(UN,'(3F16.10)') X,Y,0.0_DP
-       ELSE
-         WRITE(UN,'(3F16.10)') X,Y,P/REAL(BCOUNT,DP)
-       END IF
-
-       Y=Y+YDIST
+        END IF
       END DO
-      WRITE(UN,*) ''
-      X=X+XDIST
+      IF (BCOUNT > 0) THEN
+        WRITE(UN,'(3F16.10)') X, Y, P/REAL(BCOUNT, DP)
+      ELSE
+        WRITE(UN,'(3F16.10)') X, Y, 0._DP
+      END IF
     END DO
+    WRITE(UN,*) ''
+  END DO
   CLOSE(UN)
-  
 END SUBROUTINE MAKE_PM3D
 
 
 
 
 
-!#########################################################################
-!######################## Spectral function ##############################
-!#########################################################################
 
-SUBROUTINE SPECTRAL_FUNCTION(TEBS,BANDSPEC,FILETYPE)
-  TYPE(BAND),DIMENSION(:),INTENT(IN) :: TEBS
-  CHARACTER(LEN=*) :: BANDSPEC
+
+SUBROUTINE SPECTRAL_FUNCTION(TEBS, BANDSPEC, FILETYPE)
+  ! Compute and write spectral function (A and AO) for either the Fermi surface or band structure.
+
+  TYPE(BAND),        DIMENSION(:), INTENT(IN) :: TEBS
+  CHARACTER(LEN=*),                INTENT(IN) :: BANDSPEC
+  INTEGER,                         INTENT(IN) :: FILETYPE
+
   CHARACTER(LEN=50) :: SPECFILE
-  INTEGER :: I,J,kptOLD,kpt,approx,uni,FILETYPE,SPN,SPECLEN,FSURLEN
-  REAL(DP) :: A,AO,Ptemp,Etemp,E,Emin,Emax,DeltaE
-  REAL(DP) :: SIGMA,delta,S,THIN
-  REAL(DP),DIMENSION(:),ALLOCATABLE :: Em,P,OR
-  INTEGER :: COL,MAXKPT
-  IF(PAR%LSURFACE)THEN
+  INTEGER :: I, J, kptOLD, kpt, approx, uni, SPN, SPECLEN, MAXKPT, COL
+  REAL(DP) :: A, AO, E, delta, S, THIN
+  REAL(DP), ALLOCATABLE :: Em(:), P(:), OR(:)
+
+  ! Constants and setup
+  THIN = 1.0E-5_DP
+  uni = 28
+  MAXKPT = MAXVAL(NFILE(:)%BND)
+  SPECFILE = TRIM(BANDSPEC)
+  SPECLEN = LEN_TRIM(SPECFILE) + 1
+
+  ALLOCATE(Em(MAXKPT + 1), P(MAXKPT + 1), OR(MAXKPT + 1))
+
+  ! User message
+  IF (PAR%LSURFACE) THEN
     WRITE(*,'(A)') '          write spectral function for fermisurface'
   ELSE
     WRITE(*,'(A)') '          write spectral function for bandstructure'
   END IF
-  
-  THIN=1.0E-5
-  uni=28
-  MAXKPT=MAXVAL(NFILE(:)%BND)
-  SPECFILE=TRIM(BANDSPEC)
-  SPECLEN=LEN_TRIM(SPECFILE)+1
-  ALLOCATE(Em(MAXKPT+1),P(MAXKPT+1),OR(MAXKPT+1))
-  
-  SPIN: DO SPN=1,PAR%SPN
- 
-    IF(PAR%SPN==2) WRITE(SPECFILE(SPECLEN:SPECLEN+5),'(A5,I1)') '.spin',SPN
-    approx=0
-    N%SPEC(SPN)=0
-     OPEN(UNIT=UNI,FILE=TRIM(SPECFILE)//'.dat',RECL=300,status="unknown")
-      kptOLD=1
-      i=1
-      KPOINTS: DO COL=1,SIZE(TEBS,1)
-       IF ((MOD(COL,100)==0).OR.(COL==SIZE(TEBS,1))) &
-       &        CALL WRITE_PROGRESS(COL+(SPN-1)*SIZE(TEBS,1),PAR%SPN*SIZE(TEBS,1))
-       IF(.NOT.TEBS(COL)%LOCU) CYCLE
 
-       !Still the same pc k-point as before?
-       IF((TEBS(COL)%NKPT==kptOLD).AND.(TEBS(COL)%SPN==SPN)) THEN
-        P(i)=TEBS(COL)%W
-        Em(i)=TEBS(COL)%E
-        OR(i)=TEBS(COL)%OC(PAR%FORB)
-        i=i+1
-       !Last line for current k-point already read
-       END IF
-       IF(((TEBS(COL)%NKPT/=kptOLD).AND.(TEBS(COL)%SPN==SPN)).OR.(COL==SIZE(TEBS,1))) THEN
-         A=0.0_DP
-         AO=0.0_DP
-         IF(PAR%LSURFACE)THEN
-           !Fermi surface step
-           DO J=1,I-1
-             CALL DELSTP(approx,Em(j)/PAR%SIGMA,delta,S)
-             A=A+P(j)*delta
-             AO=AO+OR(J)*delta
-           END DO
-           IF((A>THIN).OR.(.NOT.PAR%SLIMSPEC))THEN
-             WRITE(UNI,'(I5,3(F22.16,1X))')  &
-             & TEBS(MAX(COL-1,1))%PATH,TEBS(MAX(COL-1,1))%K,A,AO
-             N%SPEC(SPN)=N%SPEC(SPN)+1
-             IF(A>THIN)N%SPECDAT(SPN)=.TRUE.
-           END IF
-          ! end Fermi surface
-         ELSE
-           E=PAR%FBORDER(1)
-           DO WHILE (E<=PAR%FBORDER(2))
-             A=0.0_DP
-             AO=0.0_DP
-             DO J=1,I-1
-               CALL DELSTP(APPROX,(E-Em(j))/PAR%SIGMA,DELTA,S)
-               A=A+P(J)*DELTA
-               AO=AO+OR(J)*DELTA
-             END DO
-             IF((A>THIN).OR.(.NOT.PAR%SLIMSPEC))THEN
-               WRITE(UNI,'(I7,4(F22.16,1X))')  &
-               & TEBS(MAX(COL-1,1))%NKPT,TEBS(MAX(COL-1,1))%K,E,A,AO
-               N%SPEC(SPN)=N%SPEC(SPN)+1
-             END IF
-             E=E+PAR%SPECDELTA
-           enddo
-         END IF
-         P(1)=TEBS(COL)%W
-         Em(1)=TEBS(COL)%E
-         OR(1)=TEBS(COL)%OC(PAR%FORB)
-         i=2
-         kptOLD=TEBS(COL)%NKPT
-       ENDIF
-      ENDDO KPOINTS
-      WRITE(UNI,*) ''
-      CLOSE(UNI)
+  ! Loop over spins
+  DO SPN = 1, PAR%SPN
+    ! Optional: add spin suffix to file name
+    IF (PAR%SPN == 2) SPECFILE(SPECLEN:SPECLEN+5) = '.spin'//CHAR(ICHAR('0')+SPN)
 
-      IF(N%SPEC(SPN)==0)THEN
-          WRITE(*,'(A,I1)') 'Found no data of the spectral function'
-        IF(PAR%LSURFACE)THEN
-          IF(PAR%SPN==2)THEN
-            WRITE(*,'(A,I1)') 'for the Fermi surface for spin=',SPN
-          ELSE
-            WRITE(*,'(A)') 'of the Fermi surface'
+    approx = 0
+    N%SPEC(SPN) = 0
+    OPEN(UNIT=uni, FILE=TRIM(SPECFILE)//'.dat', RECL=300, STATUS="unknown")
+
+    kptOLD = 1
+    I = 1
+
+    ! Loop over all bands/k-points
+    DO COL = 1, SIZE(TEBS)
+      IF ((MOD(COL,100)==0) .OR. (COL==SIZE(TEBS))) THEN
+        CALL WRITE_PROGRESS(COL + (SPN-1)*SIZE(TEBS), PAR%SPN*SIZE(TEBS))
+      END IF
+      IF (.NOT. TEBS(COL)%LOCU) CYCLE
+
+      ! Still on the same k-point?
+      IF ((TEBS(COL)%NKPT == kptOLD) .AND. (TEBS(COL)%SPN == SPN)) THEN
+        P(I)   = TEBS(COL)%W
+        Em(I)  = TEBS(COL)%E
+        OR(I)  = TEBS(COL)%OC(PAR%FORB)
+        I      = I + 1
+      END IF
+
+      ! New k-point block or last entry
+      IF (((TEBS(COL)%NKPT /= kptOLD) .AND. (TEBS(COL)%SPN == SPN)) .OR. (COL == SIZE(TEBS))) THEN
+        A  = 0._DP
+        AO = 0._DP
+
+        IF (PAR%LSURFACE) THEN
+          ! Fermi surface: evaluate only at Fermi energy
+          DO J = 1, I - 1
+            CALL DELSTP(approx, Em(J) / PAR%SIGMA, delta, S)
+            A  = A  + P(J) * delta
+            AO = AO + OR(J) * delta
+          END DO
+          IF ((A > THIN) .OR. (.NOT. PAR%SLIMSPEC)) THEN
+            WRITE(uni, '(I5,3(F22.16,1X))') TEBS(MAX(COL-1,1))%PATH, TEBS(MAX(COL-1,1))%K, A, AO
+            N%SPEC(SPN) = N%SPEC(SPN) + 1
+            IF (A > THIN) N%SPECDAT(SPN) = .TRUE.
           END IF
         ELSE
-          IF(PAR%SPN==2)THEN
-            WRITE(*,'(A,I1)') 'for spin=',SPN
-          END IF
+          ! Bandstructure: integrate over energy range
+          E = PAR%FBORDER(1)
+          DO WHILE (E <= PAR%FBORDER(2))
+            A  = 0._DP
+            AO = 0._DP
+            DO J = 1, I - 1
+              CALL DELSTP(approx, (E - Em(J)) / PAR%SIGMA, delta, S)
+              A  = A  + P(J) * delta
+              AO = AO + OR(J) * delta
+            END DO
+            IF ((A > THIN) .OR. (.NOT. PAR%SLIMSPEC)) THEN
+              WRITE(uni, '(I7,4(F22.16,1X))') TEBS(MAX(COL-1,1))%NKPT, TEBS(MAX(COL-1,1))%K, E, A, AO
+              N%SPEC(SPN) = N%SPEC(SPN) + 1
+            END IF
+            E = E + PAR%SPECDELTA
+          END DO
+        END IF
+
+        ! Prepare for new block
+        P(1)   = TEBS(COL)%W
+        Em(1)  = TEBS(COL)%E
+        OR(1)  = TEBS(COL)%OC(PAR%FORB)
+        I      = 2
+        kptOLD = TEBS(COL)%NKPT
+      END IF
+
+    END DO
+
+    WRITE(uni,*) ''
+    CLOSE(uni)
+
+    ! User info if nothing was written
+    IF (N%SPEC(SPN) == 0) THEN
+      WRITE(*,'(A)') 'Found no data of the spectral function'
+      IF (PAR%LSURFACE) THEN
+        IF (PAR%SPN == 2) THEN
+          WRITE(*,'(A,I1)') 'for the Fermi surface for spin=', SPN
+        ELSE
+          WRITE(*,'(A)') 'of the Fermi surface'
+        END IF
+      ELSE
+        IF (PAR%SPN == 2) THEN
+          WRITE(*,'(A,I1)') 'for spin=', SPN
         END IF
       END IF
-    END DO SPIN
+    END IF
+  END DO
+
+  DEALLOCATE(Em, P, OR)
 END SUBROUTINE SPECTRAL_FUNCTION
+
+
+
+
 
 
 !******************** DELSTP    ****************************************
@@ -3750,68 +3718,70 @@ END SUBROUTINE SPECTRAL_FUNCTION
 !
 !***********************************************************************
 
-      SUBROUTINE DELSTP(N,X,D,S)
-      !USE constant
-!      IMPLICIT REAL(8) (A-H,O-Z)
-!      INTEGER, PARAMETER :: q=SELECTED_REAL_KIND(10) !USE prec
-      INTEGER :: N,K,I
-      REAL(DP) :: X,D,S,S0,H1,H2,H3,A,EX2
-     REAL(DP),PARAMETER :: PI=4._DP*DATAN(1._DP)
-!	PI=4._DP*DATAN(1._DP) !USE constant (?)
+SUBROUTINE DELSTP(N, X, D, S)
+  ! Computes the Methfessel-Paxton delta (D) and smearing function (S)
+  ! for order N at position X.
+  IMPLICIT NONE
+  INTEGER, INTENT(IN) :: N
+  REAL(DP), INTENT(IN) :: X
+  REAL(DP), INTENT(OUT) :: D, S
+  REAL(DP), PARAMETER :: PI = 4._DP * ATAN(1._DP)
+  REAL(DP), PARAMETER :: SQRT_PI = SQRT(PI)
 
-      IF (X<-1.E5_DP) THEN
-         D=0._DP
-         S=0._DP
-         RETURN
-      END IF
-      IF (X>1.E5_DP) THEN
-         D=0._DP
-         S=1._DP
-         RETURN
-      END IF
-!=======================================================================
-!  If n < 0 : assume Gaussian type smearing
-!  (must return  same as N=0 or ... )
-!=======================================================================
-      IF (N<0) THEN
-         D=EXP(-(X*X))/SQRT(PI)
-         S=0.5_DP+0.5_DP*ERRF(X)
-         RETURN
-      END IF
-!=======================================================================
-! Methfessel & Paxton
-!=======================================================================
-      EX2=EXP(-(X*X))
-      S0=0.5_DP*ERRF(X)
-      A=1._DP/SQRT(PI)
-      K=0
-      H1=1._DP
-      H2=2._DP*X
-      S=0._DP
-      D=A
-      DO I=1,N
-         A=A/((-4._DP)*I)
-         K=K+1
-         H3=H1
-         H1=H2
-         H2=2._DP*X*H2-2*K*H3
-         S=S+A*H1
-         K=K+1
-         H3=H1
-         H1=H2
-         H2=2._DP*X*H2-2*K*H3
-         D=D+A*H1
-      ENDDO
-      D=D*EX2
-      S=0.5_DP+S0-S*EX2
-      RETURN
-      END SUBROUTINE DELSTP
+  REAL(DP) :: A, EX2, S0, Hnm2, Hnm1, Hn
+  INTEGER :: i, k
 
-  FUNCTION ERRF(X)
-   REAL(DP) ERRF,X
-   ERRF=ERF(X)
-   RETURN
-  END
+  ! Handle asymptotic limits for stability
+  IF (X < -8._DP) THEN
+    D = 0._DP
+    S = 0._DP
+    RETURN
+  ELSEIF (X > 8._DP) THEN
+    D = 0._DP
+    S = 1._DP
+    RETURN
+  END IF
+
+  ! Zeroth-order (Gaussian smearing)
+  IF (N < 0) THEN
+    D = EXP(-X*X) / SQRT_PI
+    S = 0.5_DP * (1._DP + ERF(X))
+    RETURN
+  END IF
+
+  ! Initialize common values
+  EX2 = EXP(-X*X)
+  S0 = 0.5_DP * ERF(X)
+  A  = 1._DP / SQRT_PI
+  D  = A
+  S  = 0._DP
+
+  ! Hermite polynomial initialization
+  Hnm2 = 1._DP           ! H_0(x)
+  Hnm1 = 2._DP * X       ! H_1(x)
+  k    = 0
+
+  DO i = 1, N
+    A = A / (-4._DP * i)
+
+    ! Compute H_{2i - 1}
+    k = k + 1
+    Hn   = 2._DP * X * Hnm1 - 2._DP * (k - 1) * Hnm2
+    S    = S + A * Hn
+    Hnm2 = Hnm1
+    Hnm1 = Hn
+
+    ! Compute H_{2i}
+    k = k + 1
+    Hn   = 2._DP * X * Hnm1 - 2._DP * (k - 1) * Hnm2
+    D    = D + A * Hn
+    Hnm2 = Hnm1
+    Hnm1 = Hn
+  END DO
+
+  D = D * EX2
+  S = 0.5_DP + S0 - S * EX2
+END SUBROUTINE DELSTP
 
 
 

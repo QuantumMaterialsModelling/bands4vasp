@@ -4,7 +4,7 @@
 
 #Set to false, if you only want to plot the data
 #whitout any roots, but optionally with spectral function
-ROOTSCALC = .TRUE.
+ROOTSCALC = TRUE
 
 #if one integer n => ignore the first n k-points
 #if 2 integer seperated by a minus n-m => ignore k-points n up to m
@@ -41,12 +41,12 @@ EDIF = 0.01
 #If true calculate the weighted average blochcharacter
 #if false add them together
 #for the filtered data
-BAVERAGE = .TRUE.
+BAVERAGE = TRUE
 
 #If true calculate the weighted average orbitalcharacter
 #if false add them together
 #for the filtered data
-OAVERAGE = .TRUE.
+OAVERAGE = TRUE
 
 #Energy points with a Bloch character less than this
 #threshold will be ignored
@@ -67,7 +67,7 @@ NPOINTS = 3
 
 #.false. => linear regression for fermiroots
 #.true. => polynomial interpolation
-LPOLY = .FALSE.
+LPOLY = FALSE
 
 #The accuracy for the Regula falsi method,
 #of the roots from the polynom
@@ -77,11 +77,11 @@ REGULAPREC = 0.001
 ODISTINCT = 0.3
 
 #if .true. => Allow Bands with different Bandindex
-BNDDIFF = .TRUE.
+BNDDIFF = TRUE
 
 #if true the blochcharacter for each band and K-POINT (SC)
 #get normed respectively, works only with PRJCAR files
-KAPPANORM = .FALSE.
+KAPPANORM = FALSE
 
 
 #####################################################################
@@ -100,15 +100,31 @@ KAPPANORM = .FALSE.
 #Symmetry Points of the fermisurface in
 #reciprocal coordinates => true
 #cartesian coordinates => false
-SYMREC = .TRUE.
+SYMREC = TRUE
 
-#The grid density of the fermisurface plots
-# 0 => no grid
+
+# Controls the grid density for Fermi surface plots (integer from 0 to 100).
+# 0 → no grid
+# n > 0 → draw n dashed lines along both x and y directions,
+#         dividing the plot into (n+1) segments per axis
+# For example: 1 → center lines; 2 → thirds; 3 → quarters, etc.
+# Higher values result in finer subdivisions (max = 100).
 FGRID = 0
 
-#if true show the cartesian coordinates of the fermisurface
-#if false show the k-vectors of the edges (default)
-FSURCART = .FALSE.
+
+# Selects the output format of the Fermi surface edge vectors.
+# Possible values:
+#   'none'      → No vectors are printed.
+#   'reciprocal'→ Vectors in reciprocal lattice coordinates.
+#   'cartesian' → Vectors in 3D cartesian coordinates [1/Å].
+# Default: 'reciprocal'
+FSUREDGEVEC = reciprocal
+
+# If true, show coordinate axes with projected in-plane length of the Fermi surface.
+# For constant-kz slices, this corresponds to in-plane cartesian coordinates (kx, ky).
+# If false, no axes or tics are drawn.
+# Default: .TRUE.
+FSURTICS = TRUE
 
 
 
@@ -117,18 +133,18 @@ FSURCART = .FALSE.
 #####################################################################
 
 #Make a band-/fermisurface plot with the spectralfunction
-SPECFUN = .FALSE.
+SPECFUN = FALSE
 
 #smearing for the spectralfunction
-SIGMA = 0.03
+SIGMA = 0.015
 
 #Energysteps for the spectralfunction
-SPECDELTA = 0.001
+SPECDELTA = 0.0003
 
 #true => write only data where Bloch character > 0
 #false => write all data for every energystep and
 #creates an interpolated plot
-SLIMSPEC = .FALSE.
+SLIMSPEC = TRUE
 
 
 #####################################################################
@@ -136,10 +152,10 @@ SLIMSPEC = .FALSE.
 #####################################################################
 
 #if false don't produce any plot
-MAKEPLOTS = .TRUE.
+MAKEPLOTS = TRUE
 
-#chose format: png, pngcairo, eps(default)
-FILEFORMAT = EPS
+#chose format: png(default), pdf, eps
+FILEFORMAT = png
 
 #Give an explicite size 'x, y' for the plots
 #values between 0 and 1 gives the ratio and greater then 1 are pixels
@@ -149,10 +165,10 @@ FILEFORMAT = EPS
 #PLOTSIZE = 10.0, 7.0
 
 #Make a bandplot with different colours for every bandindex
-BANDINDEXPLOT = .FALSE.
+BANDINDEXPLOT = FALSE
 
 #if '.true.' don't remove plotdata and gnuplot file
-LEAVEPLOTDATA = .TRUE.
+LEAVEPLOTDATA = TRUE
 
 
 
@@ -191,3 +207,12 @@ PSFAC = 1.0
 
 #Backgroundcolour
 BACKCOLOUR = white
+
+
+####################################################################
+#================= Pre-processing parameter =======================#
+####################################################################
+
+#Set the preview visualisation feature for the --pre-...
+#pre-processing options (python environment required)
+PREPREVIEW = TRUE

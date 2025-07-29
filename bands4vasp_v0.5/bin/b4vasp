@@ -1,0 +1,239 @@
+#!/bin/bash
+# Main execution script for bands4vasp
+# Arguments:
+#     $1 filename (optional)
+
+
+# -- Set working directories
+odir=`pwd`
+
+adir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+packagedir="$( cd "$adir" && cd .. && pwd )"
+bin="$packagedir/bin"
+allfilenames="$packagedir"'/bands4vasp_filenames'
+
+# -- Safety: Never run in source directory
+if [ "`pwd`" == "$adir" ];then
+  echo "ERROR: It is not allowed to start calculations in the source directory!"
+  echo "$adir"
+  echo "Do it somewhere else!"
+  exit 1
+fi
+
+. "$bin/INPAR_utils.sh"
+
+# -- Read paths and filenames
+filedir=`sed -n 1p "$allfilenames"`
+INPAR=`sed -n 2p "$allfilenames"`
+plotdata=`sed -n 3p "$allfilenames"`
+outgrid=`sed -n 5p "$allfilenames"`
+fermifile=`sed -n 6p "$allfilenames"`
+fittpoints=`sed -n 7p "$allfilenames"`
+latt=`sed -n 8p "$allfilenames"`
+fefile=`sed -n 9p "$allfilenames"`
+fsurfile=`sed -n 20p "$allfilenames"`
+fsurspecfile=`sed -n 21p "$allfilenames"`
+spinfile=`sed -n 22p "$allfilenames"`
+datdir=`sed -n 23p "$allfilenames"`
+imgdir=`sed -n 24p "$allfilenames"`
+plotfiles=`sed -n 25p "$allfilenames"`
+allstatfiles=`sed -n 26p "$allfilenames"`
+outpar=`sed -n 28p "$allfilenames"`
+
+# -- Check required scripts
+#inparcheck="$adir/INPARcheck.sh"
+#filecheck="$adir/filecheck.sh"
+sorce="$packagedir/src"
+oinpar="$packagedir/$INPAR"
+lread=0
+
+# -- cleanup logic
+tmpdir=$(mktemp -d -p . tmp.XXXXXX) || {
+    printf >&2 'failed to create mktemp\n'; exit 1;
+}
+
+cleanup() {
+    [ -d "$tmpdir" ] && rm -rf -- "$tmpdir"
+}
+
+#  INT  = Strg‑C
+#  TERM = kill (Standard‑SIGTERM)
+#  HUP  = Terminal/SSH is closing
+#  EXIT = any normal termination,
+#         incl. exit due to “set -e” error
+trap 'cleanup' INT TERM HUP EXIT
+
+tfefile="$tmpdir/$fefile"
+
+# -- Ensure $bin is in PATH
+if [[ ":$PATH:" != *":$bin:"* ]]; then
+  export PATH="$PATH:$bin"
+fi
+
+# -- Read filename and parse optional -rs/--readsave argument
+filename="$1"
+
+if [ $(echo "$filename"|grep -Eic '^-rs$|^--readsave$') -eq 1 ];then
+  lread=1
+  filename="$2"
+else
+  if [ $(echo "$2"|grep -Eic '^-rs$|^--readsave$') -eq 1 ];then lread=1;fi
+fi
+
+# -- Readsave mode: copy previous data if available
+if [ $lread -eq 1 ];then
+  if [ -d "$datdir" ];then
+    if [ -f "$datdir/$filedir" -a -f "$datdir/$allstatfiles" -a -f "$datdir/$latt" -a -f "$datdir/$fefile" -a -f "$datdir/$outgrid" ];then
+       cp "$datdir/$filedir" .
+       cp "$datdir/$fefile" "$tfefile"
+    else
+      echo "ERROR: You choose the --readsave option, but some or all of the following files are missing:"
+      echo "       $filedir, $allstatfiles, $latt, $fefile, $outgrid"
+      echo ""
+      echo "       You can fix this issue, by doing a calculation without the option --readsave"
+      echo "       and the INPAR flag LEAVPLOTDATA=.TRUE. (default)."
+      echo "       Afterwards you are able to read the data directly from $datdir"
+      exit
+    fi
+  else
+    echo "ERROR: You choose the --readsave option, but there is no folder $datdir."
+    echo "       The --readsave option need this data folder with the following files:"
+    echo "       $filedir, $allstatfiles, $latt, $fefile, $outgrid"
+    echo ""
+    echo "       You can fix this issue, by doing a calculation without the option --readsave"
+    echo "       and the INPAR flag LEAVPLOTDATA=.TRUE. (default)."
+    echo "       Afterwards you are able to read the data directly from $datdir"
+    exit
+  fi
+fi
+
+
+# -- Show help or info if requested
+if [ `echo "$filename"|grep -Eic '^[-]{1,}info$|^[-]{1,}help$'` -eq 1 ];then
+  cat "$packagedir/infofile"
+  exit 0
+fi
+
+# -- Copy INPAR if requested
+if [ `echo "$filename"|grep -Eic '^[-]{1,}inpar$'` -eq 1 ];then
+  cp "$oinpar" .
+  ls -1| grep -v "^$(basename "$tmpdir")$"
+  exit 0
+fi
+
+# -- Check input parameters
+INPARcheck.sh "$INPAR" "$oinpar" "$tmpdir" "$outpar"
+fpastat="$(sed -n 29p $tmpdir/$INPAR)"
+prepreview="$(sed -n 44p $tmpdir/$INPAR)"
+
+# -- Pre-processing logic: handle circle/surface/lines calculation setup
+if [ $(echo "$filename"|grep -Eic '^[-]{1,}pre') -eq 1 ];then
+    if [ $(echo "$filename"|grep -Eic '[-]circle') -eq 1 ];then
+      makefermicircle.sh "$packagedir" "$tmpdir" "$prepreview" "$2" "$3" "$4"
+      rm -f "$outpar"
+      exit 0
+    elif [ $(echo "$filename"|grep -Eic '[-]surface') -eq 1 ];then
+      makefermisurface.sh "$packagedir" "$tmpdir" "$prepreview" "$2" "$3" "$4"
+      rm -f "$outpar"
+      exit 0
+    elif [ $(echo "$filename"|grep -Eic '[-]lines') -eq 1 ];then
+      makefermilines.sh "$packagedir" "$tmpdir" "$prepreview" "$2" "$3"
+      rm -f "$outpar"
+      exit 0
+    else
+      echo "There is no pre-processing option like '$filename'"
+      echo "Options are:"
+      echo "  --pre-lines"
+      echo "  --pre-circle"
+      echo "  --pre-lines"
+      echo "\n for more informations use --help or see the documentation"
+      exit 1
+    fi
+fi
+
+# -- Detect Fermi surface mode
+lfermisurface=false
+nfermisurface=$(echo "$filename"|grep -Eic '^[-]{1,}fermi$')
+if [ $nfermisurface -eq 1 ];then
+  if [ $lread -eq 0 ];then filename="$2";fi
+  lfermisurface=true
+fi
+
+# -- Remove outdated fefile if not in read-mode
+if [ $lread -eq 0 ];then rm -f "$tfefile";fi
+
+
+# -- File check and pre-statistics
+if [ $lread -eq 0 ];then
+  filecheck.sh "$allfilenames" "$filename" "$fpastat" "$tmpdir"
+  fstat=$?
+  if [ $fstat -eq 0 ];then exit 1;fi
+else
+  fstat=$(sed -n 3p "$datdir/$allstatfiles"|awk '{print $7}')	
+fi
+
+# -- Prepare data directory
+mkdir -p "$datdir"
+
+# -- Read Fermi energy from file if available
+if [ $(echo $fpastat|grep -ciE '^bands$') -eq 0 ]&&[ $lread -eq 0 ];then
+Efermi=`cat $tfefile`
+echo "Fermi-energy :: $Efermi eV"
+else
+ Efermi=0
+fi
+
+# -- (Re-)create bandindexplot dir if needed
+if get_inpar_value_by_line 20; then
+    mkdir -p "$datdir/bandindexplot"
+fi
+
+
+# -- Clean up previous specfun files if option enabled
+if get_inpar_value_by_line 22;then rm -f $datdir/$fsurspecfile*;fi
+
+ninterval=`grep '#interval' $filedir | awk '{print $2}'`
+
+
+# -- Main VASP post-processing (Fortran wrapper, plots, etc.)
+nebsfitting "$ninterval" "$allfilenames" "$tmpdir" "$Efermi" "$fstat" "$nfermisurface" "$lread"
+if [ $? -ne 0 ];then exit 1;fi
+
+
+if [ $lread -eq 1 ];then
+  mv "$filedir" "$datdir"
+else
+  mv "$tfefile" "$datdir"
+fi
+cd $datdir
+
+# -- Read spin state (important for spin-polarized calculations)
+spin=$(cat $spinfile)
+rm -f $spinfile
+
+fstat1=$(sort_plotdata.sh ".$tmpdir" "$allfilenames" "$fstat" $lfermisurface $spin 1)
+if [ $spin -eq 2 ];then fstat2=$(sort_plotdata.sh "$allfilenames" "$fstat" $lfermisurface $spin 2);fi
+
+# -- Create plots if requested
+
+makeplot=1
+if get_inpar_value_by_line 31;then
+  bandasambler.sh ".$tmpdir" $lfermisurface "$fstat1" "$packagedir" "$allfilenames" "$plotfiles" $spin 1
+  if [ $spin -eq 2 ];then bandasambler.sh ".$tmpdir" $lfermisurface "$fstat2" "$packagedir" "$allfilenames" "$plotfiles" $spin 2;fi
+  makeplot=0
+fi
+
+cd $odir
+
+# -- Print produced plot files
+print_produced_files.sh "./$datdir/$plotfiles" "$makeplot" "$imgdir"
+
+if get_inpar_value_by_line 32;then
+  if [ $lread -eq 0 ];then mv "$filedir" "$datdir";fi
+else
+  rm -fr "$datdir"
+fi
+
+
+echo ""
+echo "=================== Calculation done! ===================="

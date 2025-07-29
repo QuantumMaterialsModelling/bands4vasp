@@ -147,11 +147,5 @@ Default values are used for variables eventually not specified in the INPAR file
 A complete description of all variables controlled by the INPAR is provided in the Manual.
 
 ***
-<<<<<<< HEAD
-  
-    
-    
-    
-=======
->>>>>>> c3f7fb4 (update: initial commit for v0.5 source, installer scripts and documentation)
+
 

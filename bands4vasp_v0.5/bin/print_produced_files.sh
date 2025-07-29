@@ -8,7 +8,7 @@ imgdir="$3"
 
 echo " "
 echo '----------------------------------------------------------'
-if [ $lplots -gt 0 ];then
+if [ $lplots -eq 0 ];then
 echo "*********** The following plots were created *************"
 echo "**********************************************************"
 echo " "

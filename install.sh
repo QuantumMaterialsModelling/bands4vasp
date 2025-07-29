@@ -1,12 +1,6 @@
-#!/bin/bash
-fpath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
-hdir="$( cd && pwd)"
-foldername='bands4vasp'
-bashrc=$hdir'/.bashrc'
-com='b4vasp'
+#!/bin/sh
+# installer for bands4vasp (files, Fortran, python venv)
 
-<<<<<<< HEAD
-=======
 set -eu
 
 foldername="bands4vasp"
@@ -14,40 +8,45 @@ commandname="b4vasp"
 pyreqs="numpy matplotlib"
 hdir="$HOME"
 bashrc="$hdir/.bashrc"
->>>>>>> c3f7fb4 (update: initial commit for v0.5 source, installer scripts and documentation)
 
+echo "Required: gfortran, gnuplot, ghostscript"
+printf "Press ENTER to continue or type 'exit' to abort: "
+read answ
+case "$answ" in
+  exit|EXIT|Exit) exit 1 ;;
+esac
 
-echo "The packages 'gfortran', 'gnuplot' and 'ghostscript' are needed"
-echo "do you want to continue installation [press enter]"
-read -p "or abort to install missing packages manually [enter exit]:" answ
-if [ `echo $answ|grep -ic 'exit'` -eq 1 ];then stop;fi
-echo ""
-
-
-while true; do
-  read -p "Enter installation path or press ENTER to install in $hdir/$foldername : " ipath
-  if [ -z "$ipath" ]; then
-    ipath="$hdir/$foldername"
-    break
-  else
-    ipath=`echo "$ipath"|sed 's/[\/]*$//'`
-    if [ `echo "$ipath"|grep -cE '^~'` -eq 1 ];then
-      ipath=$hdir'/'`echo "$ipath"|sed 's/^~//'`
-    fi
-    if [ -d "$ipath" ];then
-	ipath="$ipath/$foldername"
-	break
-    else
-      read -p "$ipath doesn't exist, creating directory? [y/n]:" answ
-      if [ `echo $answ|grep -oE '^.{1}'|grep -ic 'y'` -eq 1 -o -z "$answ" ];then break;fi
-    fi
+# Installation path dialog
+while :; do
+  printf "Enter installation path or press ENTER for %s/%s: " "$hdir" "$foldername"
+  read ipath
+  [ -z "$ipath" ] && ipath="$hdir/$foldername"
+  case "$ipath" in
+    "~"*) ipath="$hdir/`echo "$ipath" | sed 's/^~//'`" ;;
+  esac
+  if [ ! -d "$ipath" ]; then
+    printf "%s does not exist. Create it? [y/N]: " "$ipath"
+    read yn
+    case "$yn" in
+      y|Y|"") mkdir -p "$ipath" || exit 1 ;;
+      *) continue ;;
+    esac
   fi
+  break
 done
+echo "Installation directory: $ipath"
+mkdir -p "$ipath/bin"
 
-echo " "
+# Optional: Overwrite previous installation
+if [ -e "$ipath/.install_marker" ]; then
+  printf "WARNING: Previous installation detected. Overwrite? [y/N]: "
+  read yes
+  case "$yes" in
+    y|Y|"") rm -rf "$ipath"/* ;;
+    *) exit 1 ;;
+  esac
+fi
 
-<<<<<<< HEAD
-=======
 # Locate and extract release tarball
 fpath="$(cd "$(dirname "$0")" && pwd)"
 tarfile=`ls "$fpath" | grep -E '^bands4vasp_v.*\.tar\.gz$' | tail -n1`
@@ -58,29 +57,24 @@ else
   cp -R "$fpath/bands4vasp_v0.5/." "$ipath/"
 fi
 
->>>>>>> c3f7fb4 (update: initial commit for v0.5 source, installer scripts and documentation)
 
-tarfile=`ls $fpath|grep  '.tar.gz' | grep 'bands4vasp_v' | tail -n1`
-
-mkdir -p $ipath
-tar xfvz $fpath/$tarfile -C $ipath
-
-echo " "
-
-read -p "Do you want to add 'b4vasp' to your PATH variable [y/n]:" ans
-echo ""
-if [ `echo $ans|grep -ic 'y'` -eq 1 ];then
-echo "adding new PATH ..."
-if [ `grep -c '#bands4vasp command' $bashrc` -ge 1 ];then
-ed -s $bashrc <<END
-/#bands4vasp command/+c
+# PATH export
+if ! grep -q "#bands4vasp command" "$bashrc" 2>/dev/null; then
+  printf "\n#bands4vasp command\nexport PATH=\"%s/bin:\$PATH\"\n" "$ipath" >> "$bashrc"
+  echo "'b4vasp' command added to PATH in $bashrc."
+else
+  # Replace line if path changes
+  # POSIX ed(1) instead of GNU sed -i for compatibility
+  tmped="tmpedfile_$$"
+  ed -s "$bashrc" <<END > /dev/null
+/#bands4vasp command/+1c
 export PATH="$ipath/bin:\$PATH"
 .
-wq
+w
+q
 END
+fi
 
-<<<<<<< HEAD
-=======
 #############################################################################
 # --------- Fortran build ---------
 echo "Compiling Fortran programs ..."
@@ -110,46 +104,19 @@ if command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   deactivate
   echo "Python venv ready in $ipath/venv"
   echo "Activate with: . \"$ipath/venv/bin/activate\""
->>>>>>> c3f7fb4 (update: initial commit for v0.5 source, installer scripts and documentation)
 else
-   echo "" >> $bashrc
-   echo '#bands4vasp command' >> $bashrc
-   echo "export PATH=\"$ipath/bin:\$PATH\"" >> $bashrc
+  echo "WARNING: python3 not found! Python tools will not work."
 fi
 
-fi
+# Mark installation
+echo "$tarfile" > "$ipath/.install_marker"
 
-echo ""
-
-
-
-##############################################################
-#======================== compiling =========================#
-##############################################################
-
-   echo "... compiling source code ..."
-   cd "$ipath/src/"
-
-   #compile all needed files
-   gfortran -c math.f90
-   gfortran math.f90 -c mylattice.f90
-   gfortran math.f90 -c ebs_typs.f90
-   gfortran math.f90 ebs_typs.f90 mylattice.f90 -c ebs_methods.f90
-   gfortran -g -fcheck=all -Wall math.o mylattice.o ebs_typs.o ebs_methods.o ebs_main.f90 -o nebsfitting
-   gfortran getradlines.f90 -o getradlines4vasp
-   mv getradlines4vasp "$ipath/bin/."
-   mv nebsfitting "$ipath/bin/."
-   #-------------------------
-
-   cd -  > /dev/null
-
-#============================================================
-
-echo " "
-echo ">>>>>>>>> installation complete <<<<<<<<<<<"
-echo " "
-echo "enter 'b4vasp --help' for more information"
-read -p "Do you want to reload your bash [yes/no]:" ans
-
-if [ `echo $ans|grep -ic 'yes'` -eq 1 ];then bash;fi
+echo
+echo ">>>>>>>>>> INSTALLATION COMPLETE <<<<<<<<<<"
+echo "Type 'b4vasp --help' for usage."
+printf "Reload bash so the new PATH is active? [yes/no]: "
+read ans
+case "$ans" in
+  yes|YES|Yes) exec bash ;;
+esac
 
