@@ -17,11 +17,14 @@ https://github.com/QuantumMaterialsModelling/UnfoldingPatch4vasp
 If you use this code please cite:\
 D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli, "Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions",  J. Phys. Chem. C 125, 12921–12928 (2021). DOI:10.1021/acs.jpcc.1c02318 (arXiv:2103.09540).
 
-About this version, bands4vasp v0.4 (November 2021):
-This is a beta version of the package: Please report us any bug; comments and suggestions are also welcome.
-[Pre-process options added.]
+About this version, bands4vasp v0.5 (July 2025):
+See the full changes in [CHANGELOG.md](./CHANGELOG.md).    
 
 Previous versions:
+v0.4 (November 2021):
+This was a beta version of the package: Please report us any bug; comments and suggestions are also welcome.
+[Pre-process options added.]
+
 v0.3 (November 2021) [Solved: bug in post-processing non-collinear calculations]
 
 ***
@@ -34,9 +37,21 @@ The installation requires the **bands4vasp_v**\<version\>**.tar.gz** and **insta
   
 > $ source ./install.sh  
         
+### Update
+
+The update script removes the previous installation and reinstalls the latest files. It first tries to detect the install path from the #bands4vasp command entry in ~/.bashrc. If no path is found, it will ask you to provide it.
+
+$ source ./update.sh
+
+### Uninstall
+
+The uninstall script deletes the installation directory and removes the PATH export block from ~/.bashrc (the lines following #bands4vasp command). If the install path cannot be determined automatically, you will be prompted for it.
+
+$ source ./uninstall.sh
+
 ### Usage
 
-The package can be used in any _Bash environment_, it is written in _FORTRAN_ and it uses _Gnuplot_ for data visualization.
+The package can be used in any _Bash environment_, it is written in _FORTRAN_ and it uses _Gnuplot_ and _Ghostscript_ for data visualization and optionally _Python_.
 
 The bands4vasp suite can be executed by the following bash command
 
@@ -67,6 +82,7 @@ The bands4vasp package can be used in three different modes:
 Options for the analysis and visualization of VASP calculations:
 * --fermi activates the Fermi surface mode (see above).
 * -rs \[--readsave\] reads the raw data obtained from a previous execution of bands4vasp (avoiding to read VASP files, which could be time consuming), thus, it is useful for testing and visualization purposes.
+* --inpar copy the default INPAR file in the current directory
 
 Options for setting up input files used in VASP calculations (complete description available in the manual):
 * --pre-lines $1 $2 :: for setting up multi path calculations.
@@ -131,8 +147,11 @@ Default values are used for variables eventually not specified in the INPAR file
 A complete description of all variables controlled by the INPAR is provided in the Manual.
 
 ***
+<<<<<<< HEAD
   
     
     
     
+=======
+>>>>>>> c3f7fb4 (update: initial commit for v0.5 source, installer scripts and documentation)
 
