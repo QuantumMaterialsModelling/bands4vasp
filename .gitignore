@@ -1,0 +1,12 @@
+# build artifacts
+*.o
+*.mod
+*.a
+*.so
+build/
+venv/
+__pycache__/
+*.swp
+# release archives
+*.tar.gz
+
