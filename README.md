@@ -5,7 +5,7 @@ bands4vasp -- post processing package for the analysis of unfolded eigenstates i
 D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli,\
 University of Vienna (Austria)
 ***
-This Readme file serves as a quick guide: for a complete description please refer to the pdf Manual.
+This Readme file serves as a quick guide: for a complete description please refer to the pdf [Manual](https://raw.githubusercontent.com/QuantumMaterialsModelling/bands4vasp/main/bands4vasp_documentation.pdf).
 
 ## About bands4vasp
 
@@ -144,7 +144,7 @@ The bands4vasp package can read the following files from VASP calculations:
 
 The **INPAR** files contains all parameters needed for executing bands4vasp.
 Default values are used for variables eventually not specified in the INPAR file (the INPAR file with the default values is stored in the installation directory). The list of variables used in the execution of bands4vasp get printed in the **OUTPAR** file.
-A complete description of all variables controlled by the INPAR is provided in the Manual.
+A complete description of all variables controlled by the INPAR is provided in the [Manual](https://raw.githubusercontent.com/QuantumMaterialsModelling/bands4vasp/main/bands4vasp_documentation.pdf).
 
 ***
 
