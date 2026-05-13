@@ -2,7 +2,7 @@
 # Main execution script for bands4vasp
 # Arguments:
 #     $1 filename (optional)
-
+# latest edit: 13 May 2026 (Reticcioli)
 
 # -- Set working directories
 odir=`pwd`
@@ -212,7 +212,7 @@ spin=$(cat $spinfile)
 rm -f $spinfile
 
 fstat1=$(sort_plotdata.sh ".$tmpdir" "$allfilenames" "$fstat" $lfermisurface $spin 1)
-if [ $spin -eq 2 ];then fstat2=$(sort_plotdata.sh "$allfilenames" "$fstat" $lfermisurface $spin 2);fi
+if [ $spin -eq 2 ];then fstat2=$(sort_plotdata.sh ".$tmpdir" "$allfilenames" "$fstat" $lfermisurface $spin 2);fi
 
 # -- Create plots if requested
 
