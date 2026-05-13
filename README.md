@@ -17,10 +17,13 @@ https://github.com/QuantumMaterialsModelling/UnfoldingPatch4vasp
 If you use this code please cite:\
 D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli, "Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions",  J. Phys. Chem. C 125, 12921–12928 (2021). DOI:10.1021/acs.jpcc.1c02318 (arXiv:2103.09540).
 
-About this version, bands4vasp v0.5 (July 2025):
-See the full changes in [CHANGELOG.md](./CHANGELOG.md).    
+About this version, bands4vasp v0.51 (May 2026):
+Fixed a bug in the spin-2 component that could generate empty EBS plots.
 
 Previous versions:
+v0.5 (July 2025):
+See the full changes in [CHANGELOG.md](./CHANGELOG.md).
+
 v0.4 (November 2021):
 This was a beta version of the package: Please report us any bug; comments and suggestions are also welcome.
 [Pre-process options added.]
