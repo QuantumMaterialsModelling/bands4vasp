@@ -21,6 +21,7 @@ About this version, bands4vasp v0.51 (May 2026):
 Fixed a bug in the spin-2 component that could generate empty EBS plots.
 
 Previous versions:
+
 v0.5 (July 2025):
 See the full changes in [CHANGELOG.md](./CHANGELOG.md).
 
