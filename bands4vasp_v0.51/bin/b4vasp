@@ -119,6 +119,10 @@ if [ `echo "$filename"|grep -Eic '^[-]{1,}inpar$'` -eq 1 ];then
   cp "$oinpar" .
   ls -1| grep -v "^$(basename "$tmpdir")$"
   exit 0
+elif [ ! -f "$INPAR" ];then
+  echo "Warning: INPAR File Missing."
+  cp "$oinpar" .
+  echo "INPAR file copied here from default file $oinpar"
 fi
 
 # -- Check input parameters
