@@ -54,7 +54,7 @@ if [ -n "$tarfile" ]; then
   tar xfvz "$fpath/$tarfile" -C "$ipath"
 else
   echo "No tarball found; copying sources from working tree..."
-  cp -R "$fpath/bands4vasp_v0.5/." "$ipath/"
+  cp -R "$fpath/bands4vasp_v0.51/." "$ipath/"
 fi
 
 
