@@ -16,11 +16,14 @@ case "$answ" in
   exit|EXIT|Exit) exit 1 ;;
 esac
 
-# Installation path dialog
-while :; do
+# Installation path dialog. update.sh passes the existing custom path through
+# BANDS4VASP_INSTALL_PATH so an update cannot accidentally move the install.
+ipath="${BANDS4VASP_INSTALL_PATH:-}"
+while [ -z "$ipath" ]; do
   printf "Enter installation path or press ENTER for %s/%s: " "$hdir" "$foldername"
-  read ipath
-  [ -z "$ipath" ] && ipath="$hdir/$foldername"
+  read entered_path
+  [ -z "$entered_path" ] && entered_path="$hdir/$foldername"
+  ipath="$entered_path"
   case "$ipath" in
     "~"*) ipath="$hdir/`echo "$ipath" | sed 's/^~//'`" ;;
   esac
@@ -29,11 +32,13 @@ while :; do
     read yn
     case "$yn" in
       y|Y|"") mkdir -p "$ipath" || exit 1 ;;
-      *) continue ;;
+      *) ipath=""; continue ;;
     esac
   fi
-  break
 done
+if [ ! -d "$ipath" ]; then
+  mkdir -p "$ipath" || exit 1
+fi
 echo "Installation directory: $ipath"
 mkdir -p "$ipath/bin"
 
@@ -47,14 +52,21 @@ if [ -e "$ipath/.install_marker" ]; then
   esac
 fi
 
-# Locate and extract release tarball
+# Install the edited working-tree package when available. Fall back to a
+# release tarball for distributions that do not include the source directory.
 fpath="$(cd "$(dirname "$0")" && pwd)"
-tarfile=`ls "$fpath" | grep -E '^bands4vasp_v.*\.tar\.gz$' | tail -n1`
-if [ -n "$tarfile" ]; then
-  tar xfvz "$fpath/$tarfile" -C "$ipath"
+source_dir=`find "$fpath" -maxdepth 1 -type d -name 'bands4vasp_v*' | sort | tail -n1`
+tarfile=`find "$fpath" -maxdepth 1 -type f -name 'bands4vasp_v*.tar.gz' | sort | tail -n1`
+if [ -n "$source_dir" ]; then
+  echo "Copying sources from $source_dir ..."
+  cp -R "$source_dir/." "$ipath/"
+  install_source=`basename "$source_dir"`
+elif [ -n "$tarfile" ]; then
+  tar xfvz "$tarfile" -C "$ipath"
+  install_source=`basename "$tarfile"`
 else
-  echo "No tarball found; copying sources from working tree..."
-  cp -R "$fpath/bands4vasp_v0.51/." "$ipath/"
+  echo "ERROR: No bands4vasp source directory or release tarball found."
+  exit 1
 fi
 
 
@@ -99,10 +111,9 @@ echo "Setting up Python venv (for plotting tools) ..."
 PYTHON_BIN="python3"
 if command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   "$PYTHON_BIN" -m venv "$ipath/venv"
-  . "$ipath/venv/bin/activate"
-  pip install --upgrade pip
-  pip install $pyreqs
-  deactivate
+  VENV_PYTHON="$ipath/venv/bin/python"
+  "$VENV_PYTHON" -m pip install --upgrade pip
+  "$VENV_PYTHON" -m pip install $pyreqs
   echo "Python venv ready in $ipath/venv"
   echo "Activate with: . \"$ipath/venv/bin/activate\""
 else
@@ -110,7 +121,7 @@ else
 fi
 
 # Mark installation
-echo "$tarfile" > "$ipath/.install_marker"
+echo "$install_source" > "$ipath/.install_marker"
 
 echo
 echo ">>>>>>>>>> INSTALLATION COMPLETE <<<<<<<<<<"
@@ -120,4 +131,3 @@ read ans
 case "$ans" in
   yes|YES|Yes) exec bash ;;
 esac
-

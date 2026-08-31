@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6] - 2026-08-31
+### Added
+- Mixed ion selection with space-separated ion numbers and inclusive ranges.
+- Deduplication and validation of selected ions across multiple input files.
+- Spin-up, spin-down, and combined spin plots for spin-polarized calculations.
+- Signed combined projection plots using a blue-white-red palette centered at zero.
+
+### Changed
+- Installation now prefers the edited versioned source directory over an older archive.
+- Updates preserve custom installation paths such as `/home/michele/Software/bands4vasp`.
+
 ## [0.5] - 2025-07-29
 ### Fixed
 - Fixed a bug in the `--pre-` logic: sampling now works on arbitrary planes (not only special ones).
@@ -17,4 +28,3 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Expanded documentation and tutorial to cover the new parameters and workflows.
-

@@ -17,10 +17,15 @@ https://github.com/QuantumMaterialsModelling/UnfoldingPatch4vasp
 If you use this code please cite:\
 D. Dirnberger, G. Kresse, C. Franchini, M. Reticcioli, "Electronic state unfolding for plane waves: energy bands, Fermi surfaces and spectral functions",  J. Phys. Chem. C 125, 12921–12928 (2021). DOI:10.1021/acs.jpcc.1c02318 (arXiv:2103.09540).
 
-About this version, bands4vasp v0.51 (May 2026):
-Fixed a bug in the spin-2 component that could generate empty EBS plots.
+About this version, bands4vasp v0.6 (August 2026):
+- Mixed ion selections support individual ions and ranges in one expression.
+- Spin-polarized calculations produce spin-up, spin-down, and combined plots.
+- Combined projection plots use signed weights and a blue-white-red palette.
 
 Previous versions:
+
+v0.51 (May 2026):
+Fixed a bug in the spin-2 component that could generate empty EBS plots.
 
 v0.5 (July 2025):
 See the full changes in [CHANGELOG.md](./CHANGELOG.md).
@@ -151,5 +156,4 @@ Default values are used for variables eventually not specified in the INPAR file
 A complete description of all variables controlled by the INPAR is provided in the [Manual](https://raw.githubusercontent.com/QuantumMaterialsModelling/bands4vasp/main/bands4vasp_documentation.pdf).
 
 ***
-
 
